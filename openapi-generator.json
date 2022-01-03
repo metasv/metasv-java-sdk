@@ -1,0 +1,17 @@
+{
+  "basePackage": "com.metasv.client.openapi",
+  "apiPackage": "com.metasv.client.openapi.api",
+  "modelPackage": "com.metasv.client.openapi.model",
+  "configPackage": "com.metasv.client.openapi.config",
+  "invokerPackage": "com.metasv.client.openapi",
+  "dateLibrary": "legacy",
+  "artifactDescription": "Java Client SDK for MetaSV API.",
+  "artifactUrl": "https://github.com/metasv/metasv-java-sdk",
+  "artifactVersion": "2.0.0",
+  "developerEmail": "heqiming@metasv.com",
+  "developerOrganization": "MetaSV.com",
+  "developerOrganizationUrl": "https://metasv.com/",
+  "groupId": "com.metasv",
+  "licenseName": "OPEN BSV License",
+  "licenseUrl": "https://github.com/bitcoin-sv/bitcoin-sv/blob/master/LICENSE"
+}

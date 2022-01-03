@@ -1,0 +1,2325 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: heqiming@metasv.com
+    name: MetaSV team
+  description: API definition for MetaSV provided apis
+  license:
+    name: Open BSV License version 3
+    url: https://github.com/bitcoin-sv/bitcoin-sv/blob/master/LICENSE
+  title: MetaSV API Spec
+  version: 2.0.0
+servers:
+- url: https://apiv2.metasv.com
+tags:
+- description: block related apis
+  name: block
+- description: transaction related apis
+  name: tx
+- description: address related apis
+  name: address
+- description: output spent status (outpoint of vin) apis
+  name: outpoint
+- description: merchant apis
+  name: merchant
+- description: xpub related apis
+  name: xpub
+- description: sensible contract related apis
+  name: sensible
+- description: user account related apis
+  name: user
+paths:
+  /block/info:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockchainInfo'
+          description: Get blockchain info success.
+      security:
+      - bearerAuth: []
+      summary: Get current blockchain info from full node.
+      tags:
+      - block
+      x-accepts: application/json
+  /block:
+    get:
+      parameters:
+      - description: paging flag, height of last item in last page
+        explode: true
+        in: query
+        name: last
+        required: false
+        schema:
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/BlockHeader'
+                maxItems: 100
+                type: array
+          description: successfully get lists
+      security:
+      - bearerAuth: []
+      summary: Get recent block list by paging. 30 items per page.
+      tags:
+      - block
+      x-accepts: application/json
+  /block/{blockId}:
+    get:
+      parameters:
+      - description: The block id, height or hash acceptable.
+        explode: false
+        in: path
+        name: blockId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockHeader'
+          description: get block info success
+        "404":
+          description: block info not found
+      security:
+      - bearerAuth: []
+      summary: Get block request by height or hash
+      tags:
+      - block
+      x-accepts: application/json
+  /block/{blockId}/txs:
+    get:
+      parameters:
+      - description: the request ID to search, block hash or height acceptable.
+        explode: false
+        in: path
+        name: blockId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: paging flag, blockIndex of last item returned last page.
+        explode: true
+        in: query
+        name: flag
+        required: false
+        schema:
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/BlockTx'
+                type: array
+          description: Get block tx list success
+        "404":
+          description: block not found
+      security:
+      - bearerAuth: []
+      summary: Get tx infos in the block by paging. 100 Items per page.
+      tags:
+      - block
+      x-accepts: application/json
+  /tx/{txid}:
+    get:
+      description: This api is parsed from raw hex, you can use /tx/{txid}/raw to
+        parse tx by yourself, If you want detail input info, use '/vin/{txid}' to
+        get detailed input info including address and value.
+      parameters:
+      - description: the request ID to search, txhash
+        explode: false
+        in: path
+        name: txid
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Return source script code or not (default false).
+        explode: true
+        in: query
+        name: showScript
+        required: false
+        schema:
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TxDetail'
+          description: Get transaction detail success.
+        "404":
+          description: Transaction not found
+      security:
+      - bearerAuth: []
+      summary: Get transaction detail by specific txid.
+      tags:
+      - tx
+      x-accepts: application/json
+  /tx/{txid}/raw:
+    get:
+      parameters:
+      - description: the request ID to search, txhash
+        explode: false
+        in: path
+        name: txid
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TxRaw'
+          description: Get transaction raw hex success.
+        "404":
+          description: Transaction not found
+      security:
+      - bearerAuth: []
+      summary: Get transaction raw hex by specific txid.
+      tags:
+      - tx
+      x-accepts: application/json
+  /tx/{txid}/seen:
+    get:
+      parameters:
+      - description: the request ID to search, txhash
+        explode: false
+        in: path
+        name: txid
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: boolean
+          description: Return true if the transaction is found.
+        "404":
+          description: Transaction not found.
+      security:
+      - bearerAuth: []
+      summary: Whether MetaSV have seen this tx before. This is a fast approach to
+        know if the tx exist or not.
+      tags:
+      - tx
+      x-accepts: application/json
+  /tx/broadcast:
+    post:
+      description: This api will broadcast to metasv fullnode directly, If you want
+        to use merchant api, see /merchant/boardcast.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TxRaw'
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BroadcastResult'
+          description: Broadcast success, txid returned
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BroadcastResult'
+          description: Broadcast Failed
+      security:
+      - bearerAuth: []
+      summary: Broadcast tx to metasv fullnode.
+      tags:
+      - tx
+      x-contentType: application/json
+      x-accepts: application/json
+  /address/{address}/balance:
+    get:
+      parameters:
+      - description: the requested address
+        explode: false
+        in: path
+        name: address
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressBalance'
+          description: Get address detail success.
+      security:
+      - bearerAuth: []
+      summary: Get address balance by specific address.
+      tags:
+      - address
+      x-accepts: application/json
+  /address/{address}/utxo:
+    get:
+      parameters:
+      - description: the requested address
+        explode: false
+        in: path
+        name: address
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: The last id of the last query(Paging flag)
+        explode: true
+        in: query
+        name: flag
+        required: false
+        schema:
+          format: int64
+          type: integer
+        style: form
+      - description: Whether the utxo is confirmed, true for confirmed utxo, false
+          for unconfirmed utxo, null for all utxos.
+        explode: true
+        in: query
+        name: confirmed
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AddressUtxo'
+                maxItems: 100
+                type: array
+          description: Get address utxos success.
+      security:
+      - bearerAuth: []
+      summary: Get address utxos by specific address(100 per page).
+      tags:
+      - address
+      x-accepts: application/json
+  /address/{address}/tx:
+    get:
+      parameters:
+      - description: the requested address
+        explode: false
+        in: path
+        name: address
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: The last flag of the last query record(Paging flag)
+        explode: true
+        in: query
+        name: flag
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AddressTx'
+                maxItems: 30
+                type: array
+          description: Get address transactions success.
+      security:
+      - bearerAuth: []
+      summary: Get address history by specific address(Only recent 3 months available,
+        Use super address apis if you need more history).
+      tags:
+      - address
+      x-accepts: application/json
+  /outpoint/{txid}/{index}:
+    get:
+      description: Get detailed info for a utxo(or txo if spent), Only outputs spent
+        no longer than one month are available. (Premium feature will support full
+        history)
+      parameters:
+      - description: The txid of the output
+        explode: false
+        in: path
+        name: txid
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: The index of the output in the tx.
+        explode: false
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutputInfo'
+          description: Get outpoint success.
+      security:
+      - bearerAuth: []
+      summary: Get tx output(outpoint for vin) spent status.
+      tags:
+      - outpoint
+      x-accepts: application/json
+  /vin/{txid}:
+    get:
+      description: Search output points by spent txid. Use this api to get detailed
+        inputs for the tx. (Premium feature will support full history)
+      parameters:
+      - description: The txid of the vins
+        explode: false
+        in: path
+        name: txid
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/OutputInfo'
+                type: array
+          description: Get vin list success.
+      security:
+      - bearerAuth: []
+      summary: Get all output point of vins in the tx(no longer than one month).
+      tags:
+      - outpoint
+      - tx
+      x-accepts: application/json
+  /vin/{txid}/detail:
+    get:
+      description: Search output points by spent txid. Use this api to get detailed
+        inputs for the tx.
+      parameters:
+      - description: The txid of the vins
+        explode: false
+        in: path
+        name: txid
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/OutputInfoDetail'
+                type: array
+          description: Get vin list success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get all output point of vins in the tx with detailed output script.
+      tags:
+      - outpoint
+      - tx
+      x-accepts: application/json
+  /merchant/broadcast:
+    post:
+      description: This api will broadcast to taal, you can broadcast tx with fee
+        rate 0.25 sat/b by this api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TxRaw'
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BroadcastResult'
+          description: Broadcast success, txid returned
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BroadcastResult'
+          description: Broadcast Failed
+      security:
+      - bearerAuth: []
+      summary: Broadcast tx to coorperated miner merchant APIs(TAAL).
+      tags:
+      - merchant
+      x-contentType: application/json
+      x-accepts: application/json
+  /merchant/utxo:
+    post:
+      description: Selects a set of Utxos with total value higher than the given amount
+        from a given address list . In case of HD wallets, multiple addresses can
+        be specified.
+      parameters:
+      - description: Whether the utxo is confirmed, "true" for confirmed, "false"
+          for unconfirmed, null for both
+        explode: true
+        in: query
+        name: confirmed
+        required: false
+        schema:
+          type: string
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UtxoPickRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AddressUtxo'
+                type: array
+          description: utxo pick success
+      security:
+      - bearerAuth: []
+      summary: Pick utxos by addresses and amount.
+      tags:
+      - merchant
+      x-contentType: application/json
+      x-accepts: application/json
+  /xpubs:
+    get:
+      parameters:
+      - description: The last xpub of the last query(Paging flag)
+        explode: true
+        in: query
+        name: flag
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  type: string
+                type: array
+          description: Get all registered xpub strings.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get all registered xpub strings. 300 per page.
+      tags:
+      - xpub
+      x-accepts: application/json
+  /xpubs/count:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: integer
+          description: Get total count success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get the total count of registered xpubs.
+      tags:
+      - xpub
+      x-accepts: application/json
+  /xpub:
+    post:
+      description: You have to register xpub before you can query them.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/XpubRequest'
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/XpubResult'
+          description: Register success, xpub returned.
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/XpubResult'
+          description: Register success, while xpub already exists. xpub returned.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/XpubResult'
+          description: Register forbidden. Not authorized or exceed register limit.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/XpubResult'
+          description: Bad request, xpub is not valid or skipHeight is beyond current
+            block height.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Register a new xpub.
+      tags:
+      - xpub
+      x-contentType: application/json
+      x-accepts: application/json
+  /xpub/{xpub}:
+    delete:
+      description: You can use this api to delete your registered xpub.
+      parameters:
+      - description: the xpub to search
+        explode: false
+        in: path
+        name: xpub
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/XpubResult'
+          description: Delete success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Delete a registered xpub.
+      tags:
+      - xpub
+      x-accepts: application/json
+    get:
+      description: This api returns the xpub detail you registered, authentication
+        is required.
+      parameters:
+      - description: the xpub to search
+        explode: false
+        in: path
+        name: xpub
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/XpubDetail'
+          description: Get xpub detail success.
+        "404":
+          description: Xpub not found or not registered by your account.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get xpub detail and status. Only registered xpub available.
+      tags:
+      - xpub
+      x-accepts: application/json
+  /xpub/{xpub}/balance:
+    get:
+      description: This api returns confirmed balance(same as address balance), not
+        sumed utxos.
+      parameters:
+      - description: the xpub to search
+        explode: false
+        in: path
+        name: xpub
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/XpubBalance'
+          description: Get xpub balance success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get xpub balances including confirmed and unconfirmed.
+      tags:
+      - xpub
+      x-accepts: application/json
+  /xpub/{xpub}/utxo:
+    get:
+      parameters:
+      - description: the requested xpub
+        explode: false
+        in: path
+        name: xpub
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: The max items returned in this query(default 300), not bigger
+          than 500.
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          format: int64
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/XpubUtxo'
+                maxItems: 300
+                type: array
+          description: Get xpub utxos success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get xpub utxos by specific xpub(300 per page).
+      tags:
+      - xpub
+      x-accepts: application/json
+  /xpub/{xpub}/utxo/count:
+    get:
+      parameters:
+      - description: the requested xpub
+        explode: false
+        in: path
+        name: xpub
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: integer
+          description: Get total utxo count success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get valid utxo count(including confirmed and unconfirmed).
+      tags:
+      - xpub
+      x-accepts: application/json
+  /xpub/{xpub}/txs:
+    get:
+      parameters:
+      - description: the requested xpub
+        explode: false
+        in: path
+        name: xpub
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: The last id of the last query(Paging flag)
+        explode: true
+        in: query
+        name: flag
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/XPubTransaction'
+                maxItems: 100
+                type: array
+          description: Get xpub transactions success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get xpub transaction history by specific xpub(100 per page).
+      tags:
+      - xpub
+      x-accepts: application/json
+  /xpub/{xpub}/address/{address}:
+    get:
+      parameters:
+      - description: the requested xpub
+        explode: false
+        in: path
+        name: xpub
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: the requested address
+        explode: false
+        in: path
+        name: address
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/XpubAddress'
+          description: Get xpub address success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+        "404":
+          description: Address not found in the xpub.
+      security:
+      - bearerAuth: []
+      summary: Get xpub address type and index. Only index under max index is valid.
+        Otherwise not found.
+      tags:
+      - xpub
+      x-accepts: application/json
+  /sensible/oracle:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensibleOracleInfo'
+          description: Get sensible oracle success.
+      security:
+      - bearerAuth: []
+      summary: Get metasv sensible oracle info.
+      tags:
+      - sensible
+      x-accepts: application/json
+  /sensible/oracle/utxo/{txid}/{index}:
+    get:
+      parameters:
+      - description: Utxo txid.
+        explode: false
+        in: path
+        name: txid
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Utxo txid.
+        explode: false
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensibleSignatureUtxo'
+          description: Get signature success.
+        "404":
+          description: Utxo not found.
+      security:
+      - bearerAuth: []
+      summary: Get signature for utxo.
+      tags:
+      - sensible
+      x-accepts: application/json
+  /sensible/oracle/utxoSpendBy/{txid}/{index}/{byTxid}:
+    get:
+      parameters:
+      - description: Utxo txid.
+        explode: false
+        in: path
+        name: txid
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Utxo txid.
+        explode: false
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+        style: simple
+      - description: txid that spent this utxo
+        explode: false
+        in: path
+        name: byTxid
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensibleSignatureUtxoSpendBy'
+          description: Get signature success.
+        "404":
+          description: Utxo or transaction not found.
+      security:
+      - bearerAuth: []
+      summary: Get signature for utxo spend by transaction.
+      tags:
+      - sensible
+      x-accepts: application/json
+  /sensible/oracle/utxoSpendByUtxo/{txid}/{index}/{byTxid}/{byTxIndex}:
+    get:
+      parameters:
+      - description: Utxo txid.
+        explode: false
+        in: path
+        name: txid
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Utxo txid.
+        explode: false
+        in: path
+        name: index
+        required: true
+        schema:
+          type: integer
+        style: simple
+      - description: txid that spent this utxo
+        explode: false
+        in: path
+        name: byTxid
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: tx index that spent this utxo
+        explode: false
+        in: path
+        name: byTxIndex
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensibleSignatureUtxoSpendByUtxo'
+          description: Get signature success.
+        "404":
+          description: Utxo or transaction not found.
+      security:
+      - bearerAuth: []
+      summary: Get signature for utxo spend by transaction.
+      tags:
+      - sensible
+      x-accepts: application/json
+  /sensible/ft/address/{address}/utxo:
+    get:
+      parameters:
+      - description: the requested address
+        explode: false
+        in: path
+        name: address
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Filter by contract code hash
+        explode: true
+        in: query
+        name: codeHash
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Filter by contract genesis
+        explode: true
+        in: query
+        name: genesis
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SensibleFtUtxo'
+                maxItems: 100
+                type: array
+          description: Get sensible ft utxo success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get all sensible token utxos for specific address.
+      tags:
+      - sensible
+      x-accepts: application/json
+  /sensible/ft/address/{address}/balance:
+    get:
+      parameters:
+      - description: the requested address
+        explode: false
+        in: path
+        name: address
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Filter by contract code hash
+        explode: true
+        in: query
+        name: codeHash
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Filter by contract genesis
+        explode: true
+        in: query
+        name: genesis
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SensibleFtBalance'
+                maxItems: 100
+                type: array
+          description: Get sensible ft balances success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get all sensible token balances for specific address.
+      tags:
+      - sensible
+      x-accepts: application/json
+  /sensible/ft/address/{address}/txs:
+    get:
+      parameters:
+      - description: the requested address
+        explode: false
+        in: path
+        name: address
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Filter by contract code hash
+        explode: true
+        in: query
+        name: codeHash
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Filter by contract genesis
+        explode: true
+        in: query
+        name: genesis
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The last id of the last query(Paging flag)
+        explode: true
+        in: query
+        name: flag
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SensibleFtTransaction'
+                maxItems: 100
+                type: array
+          description: Get sensible ft transactions success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get all sensible token transaction history for specific address.
+      tags:
+      - sensible
+      x-accepts: application/json
+  /user/clientPubkey:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  type: string
+                type: array
+          description: Get all registered client public keys.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: See https://github.com/metasv/metasv-client-signature for details.
+        Get all trusted public keys.
+      tags:
+      - user
+      x-accepts: application/json
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientPubkeyRequest'
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientPubkeyResult'
+          description: Register success, pubkey returned.
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientPubkeyResult'
+          description: Register success, while pubkey already exists. pubkey returned.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientPubkeyResult'
+          description: Register forbidden. Not authorized or exceed register limit.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientPubkeyResult'
+          description: Bad request, pubkey is not valid, or already registered by
+            others.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: See https://github.com/metasv/metasv-client-signature for details.
+        Register new client public key.
+      tags:
+      - user
+      x-contentType: application/json
+      x-accepts: application/json
+  /user/clientPubkey/{pubkey}:
+    delete:
+      description: See https://github.com/metasv/metasv-client-signature for details.
+        You can use this api to delete your registered public key.
+      parameters:
+      - description: the pubkey to delete
+        explode: false
+        in: path
+        name: pubkey
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientPubkeyResult'
+          description: Delete success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Delete a registered client public key.
+      tags:
+      - user
+      x-accepts: application/json
+  /user/traffic:
+    get:
+      description: Return hourly summed outbound traffic bytes.
+      parameters:
+      - description: define start query time(unix timestamp)
+        explode: true
+        in: query
+        name: startTime
+        required: false
+        schema:
+          format: int64
+          type: integer
+        style: form
+      - description: define end query time(unix timestamp)
+        explode: true
+        in: query
+        name: endTime
+        required: false
+        schema:
+          format: int64
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/UserHourlyTraffic'
+                maxItems: 50
+                type: array
+          description: Get hourly traffic success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get traffic details for every hour(valid in six months).
+      tags:
+      - user
+      x-accepts: application/json
+  /user/traffic/sum:
+    get:
+      description: Return  summed outbound traffic bytes in current month.
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserTrafficSum'
+          description: Get hourly traffic success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Sum all traffic in the current month.
+      tags:
+      - user
+      x-accepts: application/json
+components:
+  schemas:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+    BlockchainInfo:
+      example:
+        difficulty: difficulty
+        headers: 6
+        chain: chain
+        chainwork: chainwork
+        medianTime: 1
+        blocks: 0
+        bestBlockHash: bestBlockHash
+      properties:
+        chain:
+          description: mainnet or testnet
+          type: string
+        blocks:
+          description: current block count
+          type: integer
+        headers:
+          description: current block header count
+          type: integer
+        bestBlockHash:
+          description: current highest blockhash
+          type: string
+        difficulty:
+          description: decimal string for current difficulty
+          type: string
+        medianTime:
+          description: current median time
+          format: int64
+          type: integer
+        chainwork:
+          description: current pow
+          type: string
+      type: object
+    BlockHeader:
+      example:
+        reward: 5
+        minerAddress: minerAddress
+        blockHash: blockHash
+        outputCount: 9
+        bits: 2
+        merkleRoot: merkleRoot
+        version: 6
+        nonce: 4
+        miner: miner
+        medianTime: 5
+        coinbase: coinbase
+        size: 3
+        txCount: 2
+        prevBlockHash: prevBlockHash
+        height: 0
+        timestamp: 1
+        inputCount: 7
+      properties:
+        height:
+          description: Block height.
+          type: integer
+        blockHash:
+          description: Block hash.
+          type: string
+        version:
+          description: Block version.
+          type: integer
+        prevBlockHash:
+          description: The block hash of the previous block.
+          type: string
+        merkleRoot:
+          description: Hex formatted block merkle root.
+          type: string
+        timestamp:
+          description: Block timestamp.
+          format: int64
+          type: integer
+        medianTime:
+          description: Block median timestamp.
+          format: int64
+          type: integer
+        reward:
+          description: Miner total rewards, including miner fee.
+          format: int64
+          type: integer
+        miner:
+          description: Guessed miner name.
+          type: string
+        minerAddress:
+          description: Miner address that received rewards.
+          type: string
+        txCount:
+          description: Total txs count included in the block.
+          type: integer
+        inputCount:
+          description: Total input count in the block.
+          type: integer
+        outputCount:
+          description: Total output count in the block
+          type: integer
+        size:
+          description: Size of the block
+          format: int64
+          type: integer
+        bits:
+          description: Target bits.
+          format: int64
+          type: integer
+        nonce:
+          description: Block nonce
+          format: int64
+          type: integer
+        coinbase:
+          description: Hex formated coinbase info.
+          type: string
+      type: object
+    BlockTx:
+      description: Tx simple info for block tx list.
+      example:
+        blockHash: blockHash
+        outputCount: 5
+        size: 6
+        lockTime: 5
+        fee: 2
+        txid: txid
+        confirmations: 7
+        height: 0
+        inputCount: 1
+        timestamp: 9
+      properties:
+        txid:
+          description: Transaction hash.
+          type: string
+        height:
+          description: Block height of this tx.
+          type: integer
+        blockHash:
+          description: Hash of the block
+          type: string
+        size:
+          description: transaction size
+          format: int64
+          type: integer
+        inputCount:
+          description: Input count in this transaction
+          type: integer
+        outputCount:
+          description: Output count in this transaction.
+          type: integer
+        lockTime:
+          description: Lock time of this transaction
+          format: int64
+          type: integer
+        fee:
+          description: Trasaction fee.
+          format: int64
+          type: integer
+        confirmations:
+          description: Confirmations of this transaction, -1 if unconfirmed.
+          type: integer
+        timestamp:
+          description: Block timestamp for the transaction, confirmed tx only.
+          format: int64
+          type: integer
+      type: object
+    TxDetail:
+      description: Parsed tx info
+      example:
+        outputs:
+        - address: address
+          lockScript: lockScript
+          index: 5
+          value: 5
+        - address: address
+          lockScript: lockScript
+          index: 5
+          value: 5
+        txDetail:
+          blockHash: blockHash
+          outputCount: 5
+          size: 6
+          lockTime: 5
+          fee: 2
+          txid: txid
+          confirmations: 7
+          height: 0
+          inputCount: 1
+          timestamp: 9
+        inputs:
+        - utxoIndex: 6
+          utxoTxid: utxoTxid
+          address: address
+          unlockScript: unlockScript
+          index: 0
+          value: 1
+        - utxoIndex: 6
+          utxoTxid: utxoTxid
+          address: address
+          unlockScript: unlockScript
+          index: 0
+          value: 1
+      properties:
+        txDetail:
+          $ref: '#/components/schemas/BlockTx'
+        inputs:
+          items:
+            $ref: '#/components/schemas/TxInput'
+          type: array
+        outputs:
+          items:
+            $ref: '#/components/schemas/TxOutput'
+          type: array
+      type: object
+    TxInput:
+      description: Parsed inputs from raw tx. Use output api to get value and spent
+        info.
+      example:
+        utxoIndex: 6
+        utxoTxid: utxoTxid
+        address: address
+        unlockScript: unlockScript
+        index: 0
+        value: 1
+      properties:
+        index:
+          description: Input index of the tx.
+          type: integer
+        utxoTxid:
+          description: The outpoint utxo txid that this input spent
+          type: string
+        utxoIndex:
+          description: The outpoint utxo index that this input spent
+          type: integer
+        address:
+          description: Parsed address from pubkey(P2PKH input only).
+          type: string
+        value:
+          description: satoshi value of this input.
+          format: int64
+          type: integer
+        unlockScript:
+          description: The hex of the input script.
+          type: string
+      type: object
+    TxOutput:
+      description: Parsed outputs from raw tx.
+      example:
+        address: address
+        lockScript: lockScript
+        index: 5
+        value: 5
+      properties:
+        index:
+          description: Output index of the tx.
+          type: integer
+        value:
+          description: Bitcoin Value in this output.
+          format: int64
+          type: integer
+        address:
+          description: Parsed address from output
+          type: string
+        lockScript:
+          description: Hex formatted lockScript
+          type: string
+      type: object
+    TxRaw:
+      description: Raw hex formatted Tx returned.
+      example:
+        hex: hex
+      properties:
+        hex:
+          description: hex formatted raw tx.
+          type: string
+      type: object
+    BroadcastResult:
+      description: Broadcast result
+      example:
+        txid: txid
+        message: message
+      properties:
+        txid:
+          description: return txid if broadcast success
+          type: string
+        message:
+          description: return messages if broadcast failed
+          type: string
+      type: object
+    AddressBalance:
+      description: The current balance for a particular address
+      example:
+        unconfirmed: 6
+        address: address
+        confirmed: 0
+      properties:
+        address:
+          description: current address
+          type: string
+        confirmed:
+          description: confirmed balance
+          format: int64
+          type: integer
+        unconfirmed:
+          description: unconfirmed balance
+          format: int64
+          type: integer
+      type: object
+    AddressUtxo:
+      description: Utxos by address(or addresses) order by height asc.
+      example:
+        outIndex: 6
+        flag: 0
+        address: address
+        txid: txid
+        value: 1
+        height: 5
+      properties:
+        flag:
+          description: paging flag
+          format: int64
+          type: integer
+        address:
+          description: Address of the utxo
+          type: string
+        txid:
+          description: txid of the utxo
+          type: string
+        outIndex:
+          description: output index in the tx
+          type: integer
+        value:
+          description: Value of the utxo
+          format: int64
+          type: integer
+        height:
+          description: Height of the utxo, -1 if not confirmed
+          type: integer
+      type: object
+    AddressTx:
+      description: Transaction history of the address.
+      example:
+        income: 1
+        flag: flag
+        address: address
+        txid: txid
+        time: 0
+        outcome: 5
+        height: 6
+      properties:
+        flag:
+          description: Paging flag
+          type: string
+        address:
+          description: The address of the record
+          type: string
+        time:
+          description: timestamp of the tx
+          format: int64
+          type: integer
+        height:
+          description: Block Height of the tx, -1 if not confirmed
+          type: integer
+        income:
+          description: total income of the address from this tx
+          format: int64
+          type: integer
+        outcome:
+          description: total outcome of the address from this tx
+          format: int64
+          type: integer
+        txid:
+          description: txid of this record
+          type: string
+      type: object
+    OutputInfo:
+      description: spent status and value info of the output.
+      example:
+        address: address
+        spent: true
+        spentIndex: 1
+        txid: txid
+        index: 0
+        spentHeight: 5
+        spentTxid: spentTxid
+        value: 6
+      properties:
+        txid:
+          description: txid that this output is in.
+          type: string
+        index:
+          description: index of this output in the tx.
+          type: integer
+        address:
+          description: parsed address of this output, empty for non standard.
+          type: string
+        value:
+          description: value of this output
+          format: int64
+          type: integer
+        spent:
+          description: this output is spent or not, true if spent
+          type: boolean
+        spentTxid:
+          description: txid that spent this output
+          type: string
+        spentIndex:
+          description: vin index of the spent tx
+          type: integer
+        spentHeight:
+          description: height of the spent tx(-1 if unconfirmed, 0 if unspent)
+          type: integer
+      type: object
+    OutputInfoDetail:
+      description: spent status and value info of the output with detailed output
+        script.
+      example:
+        address: address
+        spent: true
+        spentIndex: 1
+        txid: txid
+        index: 0
+        spentHeight: 5
+        spentTxid: spentTxid
+        value: 6
+        script: script
+      properties:
+        txid:
+          description: txid that this output is in.
+          type: string
+        index:
+          description: index of this output in the tx.
+          type: integer
+        script:
+          description: output scrypt in hex format
+          type: string
+        address:
+          description: parsed address of this output, empty for non standard.
+          type: string
+        value:
+          description: value of this output
+          format: int64
+          type: integer
+        spent:
+          description: this output is spent or not, true if spent
+          type: boolean
+        spentTxid:
+          description: txid that spent this output
+          type: string
+        spentIndex:
+          description: vin index of the spent tx
+          type: integer
+        spentHeight:
+          description: height of the spent tx(-1 if unconfirmed, 0 if unspent)
+          type: integer
+      type: object
+    UtxoPickRequest:
+      description: Request object to batch pick utxo
+      example:
+        addresses:
+        - addresses
+        - addresses
+        amount: 0
+      properties:
+        addresses:
+          description: The address list to pick utxo from
+          items:
+            type: string
+          type: array
+        amount:
+          description: The total amount you want to pick
+          format: int64
+          type: integer
+      type: object
+    XpubRequest:
+      description: Request object to register(or delete) a new xpub
+      example:
+        initReceiveIndex: 6
+        initChangeIndex: 1
+        xpub: xpub
+        skipHeight: 0
+      properties:
+        xpub:
+          description: The xpub to register.
+          type: string
+        skipHeight:
+          description: Skip transactions before this height. Default is 0. Ignore
+            this while deleting xpub.
+          type: integer
+        initReceiveIndex:
+          description: Set the init maxReceiveIndex to {initReceiveIndex}(less than
+            5000) before the initial crawl , default is 200. This could increase cost.
+          type: integer
+        initChangeIndex:
+          description: Set the init maxChangeIndex(less than 5000) before the initial
+            crawl , default is 200. This could increase cost.
+          type: integer
+      type: object
+    XpubResult:
+      description: XpubRegister result
+      example:
+        message: message
+        xpub: xpub
+      properties:
+        xpub:
+          description: return xpub if broadcast success
+          type: string
+        message:
+          description: return messages if broadcast failed
+          type: string
+      type: object
+    XpubDetail:
+      description: Registered Xpub detail
+      example:
+        mode: 5
+        maxChangeIndex: 5
+        receiveIndex: 0
+        maxReceiveIndex: 6
+        processHeight: 7
+        changeIndex: 1
+        xpub: xpub
+        skipHeight: 2
+      properties:
+        xpub:
+          description: String encoded extended pubkey (xpub)
+          type: string
+        receiveIndex:
+          description: Next unused receive index, path /0/index
+          type: integer
+        maxReceiveIndex:
+          description: Max lookahead receive index.
+          type: integer
+        changeIndex:
+          description: Next unused change index, path /1/index
+          type: integer
+        maxChangeIndex:
+          description: Max lookahead change index.
+          type: integer
+        mode:
+          description: Current xpub process mode, 0 means preparing(not ready), 1
+            means synchronizing(ready)
+          type: integer
+        skipHeight:
+          description: Skip blocks before skipHeight while searching transactions.
+            This will speed up sync time.
+          type: integer
+        processHeight:
+          description: Xpub current processed height.
+          type: integer
+      type: object
+    XpubBalance:
+      description: Registered Xpub balance including confirmed and unconfirmed
+      example:
+        unconfirmed: 6
+        confirmed: 0
+      properties:
+        confirmed:
+          description: confirmed balance
+          format: int64
+          type: integer
+        unconfirmed:
+          description: unconfirmed balance
+          format: int64
+          type: integer
+      type: object
+    XpubUtxo:
+      description: Utxo belongs to the specified xpub
+      example:
+        address: address
+        flag: 2
+        addressType: 0
+        addressIndex: 6
+        txid: txid
+        xpub: xpub
+        value: 5
+        txIndex: 1
+        height: 5
+      properties:
+        xpub:
+          description: xpub of the utxo
+          type: string
+        address:
+          description: Address string of this utxo
+          type: string
+        addressType:
+          description: Address type, 0 for receive address, 1 for change address.
+            path is {{addressType}}/{{addressIndex}}
+          type: integer
+        addressIndex:
+          description: Address index. Address path in the xpub is {{addressType}}/{{addressIndex}}
+          type: integer
+        txid:
+          description: Txid for this utxo.
+          type: string
+        txIndex:
+          description: Output index for the Utxo.
+          type: integer
+        value:
+          description: Satoshi value of the utxo.
+          format: int64
+          type: integer
+        height:
+          description: The height of this utxo, -1 for unconfirmed utxo.
+          type: integer
+        flag:
+          description: The paging flag of utxo
+          format: int64
+          type: integer
+      type: object
+    XpubAddress:
+      description: Address detail in the wallet
+      example:
+        address: address
+        addressType: 0
+        addressIndex: 6
+        xpub: xpub
+      properties:
+        xpub:
+          description: xpub in the query
+          type: string
+        address:
+          description: Address in the query
+          type: string
+        addressType:
+          description: Address type, 0 for receive address, 1 for change address.
+            path is {{addressType}}/{{addressIndex}}
+          type: integer
+        addressIndex:
+          description: Address index. Address path in the xpub is {{addressType}}/{{addressIndex}}
+          type: integer
+      type: object
+    XPubTransaction:
+      description: Xpub transaction history
+      example:
+        income: 1
+        maxChangeIndex: 6
+        blockIndex: 2
+        flag: flag
+        maxReceiveIndex: 0
+        txid: txid
+        blockTime: 7
+        xpub: xpub
+        outcome: 5
+        height: 5
+      properties:
+        xpub:
+          description: query xpub
+          type: string
+        txid:
+          description: Txid for this transaction.
+          type: string
+        maxReceiveIndex:
+          description: Max lookahead receive index when processing this transaction.
+          type: integer
+        maxChangeIndex:
+          description: Max lookahead change index when processing this transaction.
+          type: integer
+        income:
+          description: Total received satoshis(Including all address)
+          format: int64
+          type: integer
+        outcome:
+          description: Total spent satoshis(Including all address)
+          format: int64
+          type: integer
+        height:
+          description: Height for this transaction. -1 for unconfirmed
+          type: integer
+        blockIndex:
+          description: Block index for this transaction, -1 for unconfirmed
+          type: integer
+        blockTime:
+          description: Block timestamp for this transaction, if unconfirmed, the time
+            is first seen time.
+          format: int64
+          type: integer
+        flag:
+          description: Paging flag, format blockTimestamp_blockIndex
+          type: string
+      type: object
+    ClientPubkeyRequest:
+      description: Request object to register(or delete) a new client public key.
+      example:
+        pubkey: pubkey
+      properties:
+        pubkey:
+          description: The hex format public key to register. (i.e. 02fd17dd0c52e54e5eed4ebe1e75df5e48df422f81c26520d44380bef1691fdd98)
+          type: string
+      type: object
+    ClientPubkeyResult:
+      description: Client public key result
+      example:
+        message: message
+        pubkey: pubkey
+      properties:
+        pubkey:
+          description: return pubkey if created successfully
+          type: string
+        message:
+          description: return messages if broadcast failed
+          type: string
+      type: object
+    SensibleOracleInfo:
+      description: Oracle public key info.
+      example:
+        github: github
+        contact: contact
+        job: job
+        version: version
+        pubKey: pubKey
+      properties:
+        pubKey:
+          description: Oracle public key.
+          type: string
+        contact:
+          description: heqiming@metasv.com
+          type: string
+        job:
+          description: Name of the job.
+          type: string
+        github:
+          description: Github repo(https://github.com/metasv/metasv).
+          type: string
+        version:
+          description: Version of the oracle
+          type: string
+      type: object
+    SensibleSignatureUtxo:
+      description: Signature for utxo.
+      example:
+        sigBE: sigBE
+        padding: padding
+        payload: payload
+        txId: txId
+        index: 0
+        sigLE: sigLE
+      properties:
+        txId:
+          description: Utxo txid.
+          type: string
+        index:
+          description: utxo index
+          type: integer
+        sigBE:
+          description: Big endian signature hex.
+          type: string
+        sigLE:
+          description: Little endian signature hex.
+          type: string
+        padding:
+          description: Signature padding.
+          type: string
+        payload:
+          description: Signature payload(txid, index, value, hash160(script))
+          type: string
+      type: object
+    SensibleSignatureUtxoSpendBy:
+      description: Signature for utxo spent by tx.
+      example:
+        sigBE: sigBE
+        padding: padding
+        payload: payload
+        txId: txId
+        index: 0
+        byTxId: byTxId
+        sigLE: sigLE
+      properties:
+        txId:
+          description: Utxo txid.
+          type: string
+        index:
+          description: utxo index
+          type: integer
+        byTxId:
+          description: Utxo txid.
+          type: string
+        sigBE:
+          description: Big endian signature hex.
+          type: string
+        sigLE:
+          description: Little endian signature hex.
+          type: string
+        padding:
+          description: Signature padding.
+          type: string
+        payload:
+          description: Signature payload(txid, index, value, hash160(script), bytxid)
+          type: string
+      type: object
+    SensibleSignatureUtxoSpendByUtxo:
+      description: Signature for utxo spent by tx, and signature for new utxo.
+      example:
+        padding: padding
+        txId: txId
+        index: 0
+        byTxScript: byTxScript
+        byTxPayload: byTxPayload
+        byTxSigBE: byTxSigBE
+        sigLE: sigLE
+        sigBE: sigBE
+        payload: payload
+        byTxId: byTxId
+        byTxSigLE: byTxSigLE
+        byTxPadding: byTxPadding
+        byTxIndex: 6
+      properties:
+        txId:
+          description: Utxo txid(same as parameter).
+          type: string
+        index:
+          description: utxo index(same as parameter)
+          type: integer
+        byTxId:
+          description: spent txid(same as parameter).
+          type: string
+        byTxIndex:
+          description: spent utxo index(same as parameter).
+          type: integer
+        sigBE:
+          description: Big endian signature hex.
+          type: string
+        sigLE:
+          description: Little endian signature hex.
+          type: string
+        padding:
+          description: Signature padding.
+          type: string
+        payload:
+          description: Signature payload(txid, index, value, hash160(script), bytxid)
+          type: string
+        byTxSigBE:
+          description: Big endian signature hex.
+          type: string
+        byTxSigLE:
+          description: Little endian signature hex.
+          type: string
+        byTxPadding:
+          description: Signature padding.
+          type: string
+        byTxPayload:
+          description: Payload for the new utxo(byTxid, byTxIndex, byTxValue, hash160(byTxScript)).
+          type: string
+        byTxScript:
+          description: Script with hex encoding
+          type: string
+      type: object
+    SensibleFtUtxo:
+      description: Sensible fungible token Utxo belongs to the specified address
+      example:
+        symbol: symbol
+        satoshi: 5
+        address: address
+        codeHash: codeHash
+        txid: txid
+        sensibleId: sensibleId
+        genesis: genesis
+        valueString: valueString
+        name: name
+        satoshiString: satoshiString
+        decimal: 0
+        value: 1
+        txIndex: 6
+        height: 5
+      properties:
+        address:
+          description: Address string of this utxo
+          type: string
+        codeHash:
+          description: Codehash of this utxo.
+          type: string
+        genesis:
+          description: Genesis of this utxo.
+          type: string
+        name:
+          description: Name of the token.
+          type: string
+        symbol:
+          description: Symbol of the token.
+          type: string
+        sensibleId:
+          description: SensibleId of the token
+          type: string
+        decimal:
+          description: The decimal position.
+          type: integer
+        txid:
+          description: Txid for this utxo.
+          type: string
+        txIndex:
+          description: Output index for the Utxo.
+          type: integer
+        value:
+          description: Token value of the utxo(Irrelavant to satoshi value).
+          format: int64
+          type: integer
+        valueString:
+          description: Token value of the utxo(In string format)
+          type: string
+        satoshi:
+          description: Bsv value of the utxo(Irrelavant to token value)
+          format: int64
+          type: integer
+        satoshiString:
+          description: Bsv value of the utxo(In string format)
+          type: string
+        height:
+          description: The height of this utxo, -1 for unconfirmed utxo.
+          type: integer
+      type: object
+    SensibleFtBalance:
+      description: Sensible fungible token balance
+      example:
+        utxoCount: 6
+        unconfirmed: 5
+        genesis: genesis
+        symbol: symbol
+        codeHash: codeHash
+        name: name
+        unconfirmedString: unconfirmedString
+        sensibleId: sensibleId
+        decimal: 0
+        confirmed: 1
+        confirmedString: confirmedString
+      properties:
+        codeHash:
+          description: Codehash of the token.
+          type: string
+        genesis:
+          description: Genesis of the token.
+          type: string
+        name:
+          description: Name of the token.
+          type: string
+        symbol:
+          description: Symbol of the token.
+          type: string
+        decimal:
+          description: The decimal position.
+          type: integer
+        sensibleId:
+          description: SensibleId of the token
+          type: string
+        utxoCount:
+          description: Number of utxos for this token.
+          type: integer
+        confirmed:
+          description: Confirmed balance of the token.
+          format: int64
+          type: integer
+        confirmedString:
+          description: Confirmed balance of the token(In string format).
+          type: string
+        unconfirmed:
+          description: Unconfirmed balance of the token.
+          format: int64
+          type: integer
+        unconfirmedString:
+          description: Unconfirmed balance of the token(In string format).
+          type: string
+      type: object
+    SensibleFtTransaction:
+      description: Sensible fungible token transaction history for specific address
+      example:
+        income: 6
+        symbol: symbol
+        address: address
+        flag: flag
+        codeHash: codeHash
+        txid: txid
+        sensibleId: sensibleId
+        genesis: genesis
+        blockIndex: 5
+        name: name
+        blockTime: 2
+        decimal: 0
+        outcome: 1
+        height: 5
+      properties:
+        address:
+          description: The querying address
+          type: string
+        codeHash:
+          description: Codehash of the token.
+          type: string
+        genesis:
+          description: Genesis of the token.
+          type: string
+        sensibleId:
+          description: SensibleId of the token
+          type: string
+        txid:
+          description: Txid for this transaction.
+          type: string
+        name:
+          description: Name of the token.
+          type: string
+        symbol:
+          description: Symbol of the token.
+          type: string
+        decimal:
+          description: The decimal position.
+          type: integer
+        income:
+          description: Total received token(This token only)
+          format: int64
+          type: integer
+        outcome:
+          description: Total spent token(This token only)
+          format: int64
+          type: integer
+        height:
+          description: Height for this transaction. -1 for unconfirmed
+          type: integer
+        blockIndex:
+          description: Block index for this transaction, -1 for unconfirmed
+          type: integer
+        blockTime:
+          description: Block timestamp for this transaction, if unconfirmed, the time
+            is first seen time.
+          format: int64
+          type: integer
+        flag:
+          description: Paging flag, format blockTimestamp_blockIndex
+          type: string
+      type: object
+    UserHourlyTraffic:
+      description: Summed outbound traffic within particular hour.
+      example:
+        hourTime: 0
+        totalBytes: 6
+        hourTimeString: hourTimeString
+      properties:
+        hourTime:
+          description: The unix timestamp of the beginning of the hour.
+          format: int64
+          type: integer
+        hourTimeString:
+          description: Parsed utc time string for readability.
+          type: string
+        totalBytes:
+          description: Total outbound bytes within this hour
+          format: int64
+          type: integer
+      type: object
+    UserTrafficSum:
+      description: Summed outbound traffic for this month and lastMonth.
+      example:
+        lastMonth: 6
+        thisMonth: 0
+      properties:
+        thisMonth:
+          description: Summed traffic for currentMonth.
+          format: int64
+          type: integer
+        lastMonth:
+          description: Summed traffic for lastMonth.
+          format: int64
+          type: integer
+      type: object
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http
+
