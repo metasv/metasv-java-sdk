@@ -28,7 +28,7 @@ import java.io.IOException;
  * Sensible fungible token balance
  */
 @ApiModel(description = "Sensible fungible token balance")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2022-03-15T15:39:16.291866+09:00[Asia/Tokyo]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2022-03-15T16:54:02.268785+09:00[Asia/Tokyo]")
 public class SensibleFtBalance {
   public static final String SERIALIZED_NAME_CODE_HASH = "codeHash";
   @SerializedName(SERIALIZED_NAME_CODE_HASH)
