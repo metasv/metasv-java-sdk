@@ -18,7 +18,7 @@ import com.metasv.client.openapi.Pair;
 import java.util.Map;
 import java.util.List;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2022-03-15T15:28:46.058485+09:00[Asia/Tokyo]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2022-03-15T15:32:54.023410+09:00[Asia/Tokyo]")
 public class ApiKeyAuth implements Authentication {
   private final String location;
   private final String paramName;

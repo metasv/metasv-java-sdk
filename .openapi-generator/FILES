@@ -108,7 +108,11 @@ src/main/java/com/metasv/client/openapi/model/XpubLiteBalance.java
 src/main/java/com/metasv/client/openapi/model/XpubRequest.java
 src/main/java/com/metasv/client/openapi/model/XpubResult.java
 src/main/java/com/metasv/client/openapi/model/XpubUtxo.java
-src/test/java/com/metasv/client/openapi/model/SensibleNftAuctionUtxoTest.java
-src/test/java/com/metasv/client/openapi/model/SensibleNftSellUtxoTest.java
-src/test/java/com/metasv/client/openapi/model/SensibleNftUtxoTest.java
-src/test/java/com/metasv/client/openapi/model/XpubLiteBalanceTest.java
+src/test/java/com/metasv/client/openapi/api/AddressApiTest.java
+src/test/java/com/metasv/client/openapi/api/BlockApiTest.java
+src/test/java/com/metasv/client/openapi/api/MerchantApiTest.java
+src/test/java/com/metasv/client/openapi/api/OutpointApiTest.java
+src/test/java/com/metasv/client/openapi/api/SensibleApiTest.java
+src/test/java/com/metasv/client/openapi/api/TxApiTest.java
+src/test/java/com/metasv/client/openapi/api/UserApiTest.java
+src/test/java/com/metasv/client/openapi/api/XpubApiTest.java

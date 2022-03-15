@@ -28,7 +28,7 @@ import java.io.IOException;
  * Sensible non fungible token Utxo belongs to the specified address
  */
 @ApiModel(description = "Sensible non fungible token Utxo belongs to the specified address")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2022-03-15T15:28:46.058485+09:00[Asia/Tokyo]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2022-03-15T15:32:54.023410+09:00[Asia/Tokyo]")
 public class SensibleNftUtxo {
   public static final String SERIALIZED_NAME_ADDRESS = "address";
   @SerializedName(SERIALIZED_NAME_ADDRESS)

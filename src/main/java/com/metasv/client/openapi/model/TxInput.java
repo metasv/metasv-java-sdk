@@ -28,7 +28,7 @@ import java.io.IOException;
  * Parsed inputs from raw tx. Use output api to get value and spent info.
  */
 @ApiModel(description = "Parsed inputs from raw tx. Use output api to get value and spent info.")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2022-03-15T15:28:46.058485+09:00[Asia/Tokyo]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2022-03-15T15:32:54.023410+09:00[Asia/Tokyo]")
 public class TxInput {
   public static final String SERIALIZED_NAME_INDEX = "index";
   @SerializedName(SERIALIZED_NAME_INDEX)
