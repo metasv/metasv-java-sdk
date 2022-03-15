@@ -5,10 +5,10 @@ info:
     name: MetaSV team
   description: API definition for MetaSV provided apis
   license:
-    name: Open BSV License version 3
-    url: https://github.com/bitcoin-sv/bitcoin-sv/blob/master/LICENSE
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
   title: MetaSV API Spec
-  version: 2.0.0
+  version: 2.1.1
 servers:
 - url: https://apiv2.metasv.com
 tags:
@@ -94,42 +94,6 @@ paths:
       security:
       - bearerAuth: []
       summary: Get block request by height or hash
-      tags:
-      - block
-      x-accepts: application/json
-  /block/{blockId}/txs:
-    get:
-      parameters:
-      - description: the request ID to search, block hash or height acceptable.
-        explode: false
-        in: path
-        name: blockId
-        required: true
-        schema:
-          type: string
-        style: simple
-      - description: paging flag, blockIndex of last item returned last page.
-        explode: true
-        in: query
-        name: flag
-        required: false
-        schema:
-          type: integer
-        style: form
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/BlockTx'
-                type: array
-          description: Get block tx list success
-        "404":
-          description: block not found
-      security:
-      - bearerAuth: []
-      summary: Get tx infos in the block by paging. 100 Items per page.
       tags:
       - block
       x-accepts: application/json
@@ -293,16 +257,6 @@ paths:
         name: flag
         required: false
         schema:
-          format: int64
-          type: integer
-        style: form
-      - description: Whether the utxo is confirmed, true for confirmed utxo, false
-          for unconfirmed utxo, null for all utxos.
-        explode: true
-        in: query
-        name: confirmed
-        required: false
-        schema:
           type: string
         style: form
       responses:
@@ -318,42 +272,6 @@ paths:
       security:
       - bearerAuth: []
       summary: Get address utxos by specific address(100 per page).
-      tags:
-      - address
-      x-accepts: application/json
-  /address/{address}/tx:
-    get:
-      parameters:
-      - description: the requested address
-        explode: false
-        in: path
-        name: address
-        required: true
-        schema:
-          type: string
-        style: simple
-      - description: The last flag of the last query record(Paging flag)
-        explode: true
-        in: query
-        name: flag
-        required: false
-        schema:
-          type: string
-        style: form
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/AddressTx'
-                maxItems: 30
-                type: array
-          description: Get address transactions success.
-      security:
-      - bearerAuth: []
-      summary: Get address history by specific address(Only recent 3 months available,
-        Use super address apis if you need more history).
       tags:
       - address
       x-accepts: application/json
@@ -391,35 +309,6 @@ paths:
       summary: Get tx output(outpoint for vin) spent status.
       tags:
       - outpoint
-      x-accepts: application/json
-  /vin/{txid}:
-    get:
-      description: Search output points by spent txid. Use this api to get detailed
-        inputs for the tx. (Premium feature will support full history)
-      parameters:
-      - description: The txid of the vins
-        explode: false
-        in: path
-        name: txid
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/OutputInfo'
-                type: array
-          description: Get vin list success.
-      security:
-      - bearerAuth: []
-      summary: Get all output point of vins in the tx(no longer than one month).
-      tags:
-      - outpoint
-      - tx
       x-accepts: application/json
   /vin/{txid}/detail:
     get:
@@ -486,16 +375,6 @@ paths:
       description: Selects a set of Utxos with total value higher than the given amount
         from a given address list . In case of HD wallets, multiple addresses can
         be specified.
-      parameters:
-      - description: Whether the utxo is confirmed, "true" for confirmed, "false"
-          for unconfirmed, null for both
-        explode: true
-        in: query
-        name: confirmed
-        required: false
-        schema:
-          type: string
-        style: form
       requestBody:
         content:
           application/json:
@@ -701,7 +580,7 @@ paths:
           type: string
         style: simple
       - description: The max items returned in this query(default 300), not bigger
-          than 500.
+          than 5000.
         explode: true
         in: query
         name: limit
@@ -724,7 +603,7 @@ paths:
           $ref: '#/components/schemas/UnauthorizedError'
       security:
       - bearerAuth: []
-      summary: Get xpub utxos by specific xpub(300 per page).
+      summary: Get xpub utxos by specific xpub.
       tags:
       - xpub
       x-accepts: application/json
@@ -828,78 +707,59 @@ paths:
       tags:
       - xpub
       x-accepts: application/json
-  /sensible/oracle:
-    get:
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SensibleOracleInfo'
-          description: Get sensible oracle success.
-      security:
-      - bearerAuth: []
-      summary: Get metasv sensible oracle info.
-      tags:
-      - sensible
-      x-accepts: application/json
-  /sensible/oracle/utxo/{txid}/{index}:
+  /xpubLite/{xpub}/utxo:
     get:
       parameters:
-      - description: Utxo txid.
+      - description: the requested xpub
         explode: false
         in: path
-        name: txid
+        name: xpub
         required: true
         schema:
           type: string
         style: simple
-      - description: Utxo txid.
-        explode: false
-        in: path
-        name: index
-        required: true
+      - description: The max items returned in this query(default 300), not bigger
+          than 5000.
+        explode: true
+        in: query
+        name: limit
+        required: false
         schema:
           type: integer
-        style: simple
+        style: form
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SensibleSignatureUtxo'
-          description: Get signature success.
-        "404":
-          description: Utxo not found.
+                items:
+                  $ref: '#/components/schemas/XpubUtxo'
+                maxItems: 300
+                type: array
+          description: Get xpub utxos success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
       security:
       - bearerAuth: []
-      summary: Get signature for utxo.
+      summary: Get xpub utxos by specific xpub(300 per page).
       tags:
-      - sensible
+      - xpub
       x-accepts: application/json
-  /sensible/oracle/utxoSpendBy/{txid}/{index}/{byTxid}:
+  /xpubLite/{xpub}/address/{address}:
     get:
       parameters:
-      - description: Utxo txid.
+      - description: the requested xpub
         explode: false
         in: path
-        name: txid
+        name: xpub
         required: true
         schema:
           type: string
         style: simple
-      - description: Utxo txid.
+      - description: the requested address
         explode: false
         in: path
-        name: index
-        required: true
-        schema:
-          type: integer
-        style: simple
-      - description: txid that spent this utxo
-        explode: false
-        in: path
-        name: byTxid
+        name: address
         required: true
         schema:
           type: string
@@ -909,65 +769,46 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SensibleSignatureUtxoSpendBy'
-          description: Get signature success.
+                $ref: '#/components/schemas/XpubAddress'
+          description: Get xpub address success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
         "404":
-          description: Utxo or transaction not found.
+          description: Address not found in the xpub.
       security:
       - bearerAuth: []
-      summary: Get signature for utxo spend by transaction.
+      summary: Get xpub address type and index. Only index under /0/70 /1/30 is valid.
+        Otherwise not found.
       tags:
-      - sensible
+      - xpub
       x-accepts: application/json
-  /sensible/oracle/utxoSpendByUtxo/{txid}/{index}/{byTxid}/{byTxIndex}:
+  /xpubLite/{xpub}/balance:
     get:
+      description: This api returns confirmed balance(same as address balance), not
+        sumed utxos.
       parameters:
-      - description: Utxo txid.
+      - description: the xpub to search
         explode: false
         in: path
-        name: txid
+        name: xpub
         required: true
         schema:
           type: string
-        style: simple
-      - description: Utxo txid.
-        explode: false
-        in: path
-        name: index
-        required: true
-        schema:
-          type: integer
-        style: simple
-      - description: txid that spent this utxo
-        explode: false
-        in: path
-        name: byTxid
-        required: true
-        schema:
-          type: string
-        style: simple
-      - description: tx index that spent this utxo
-        explode: false
-        in: path
-        name: byTxIndex
-        required: true
-        schema:
-          type: integer
         style: simple
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SensibleSignatureUtxoSpendByUtxo'
-          description: Get signature success.
-        "404":
-          description: Utxo or transaction not found.
+                $ref: '#/components/schemas/XpubLiteBalance'
+          description: Get xpub balance success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
       security:
       - bearerAuth: []
-      summary: Get signature for utxo spend by transaction.
+      summary: Get xpub balances including confirmed and unconfirmed.
       tags:
-      - sensible
+      - xpub
       x-accepts: application/json
   /sensible/ft/address/{address}/utxo:
     get:
@@ -992,6 +833,14 @@ paths:
         explode: true
         in: query
         name: genesis
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The flag of the last query Item(Paging flag)
+        explode: true
+        in: query
+        name: flag
         required: false
         schema:
           type: string
@@ -1059,7 +908,7 @@ paths:
       tags:
       - sensible
       x-accepts: application/json
-  /sensible/ft/address/{address}/txs:
+  /sensible/nft/address/{address}/utxo:
     get:
       parameters:
       - description: the requested address
@@ -1086,7 +935,7 @@ paths:
         schema:
           type: string
         style: form
-      - description: The last id of the last query(Paging flag)
+      - description: The flag of the last query Item(Paging flag)
         explode: true
         in: query
         name: flag
@@ -1100,15 +949,233 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/SensibleFtTransaction'
-                maxItems: 100
+                  $ref: '#/components/schemas/SensibleNftUtxo'
+                maxItems: 300
                 type: array
-          description: Get sensible ft transactions success.
+          description: Get sensible nft utxo success.
         "401":
           $ref: '#/components/schemas/UnauthorizedError'
       security:
       - bearerAuth: []
-      summary: Get all sensible token transaction history for specific address.
+      summary: Get all sensible nft token utxos for specific address.
+      tags:
+      - sensible
+      x-accepts: application/json
+  /sensible/nft/genesis/{codeHash}/{genesis}/utxo:
+    get:
+      parameters:
+      - description: Code hash of the token.
+        explode: false
+        in: path
+        name: codeHash
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Contract genesis
+        explode: false
+        in: path
+        name: genesis
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Find exact token Index.
+        explode: true
+        in: query
+        name: tokenIndex
+        required: false
+        schema:
+          format: int64
+          type: integer
+        style: form
+      - description: Token index not bigger than this(include this).
+        explode: true
+        in: query
+        name: max
+        required: false
+        schema:
+          format: int64
+          type: integer
+        style: form
+      - description: Token index not less than this(include this).
+        explode: true
+        in: query
+        name: min
+        required: false
+        schema:
+          format: int64
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SensibleNftUtxo'
+                maxItems: 300
+                type: array
+          description: Get sensible nft utxo success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get all sensible nft token utxos by codeHash and genesisId.
+      tags:
+      - sensible
+      x-accepts: application/json
+  /sensible/nft/sell/address/{address}/utxo:
+    get:
+      parameters:
+      - description: Owner address.
+        explode: false
+        in: path
+        name: address
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Filter by contract code hash
+        explode: true
+        in: query
+        name: codeHash
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Filter by contract genesis
+        explode: true
+        in: query
+        name: genesis
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The flag of the last query Item(Paging flag)
+        explode: true
+        in: query
+        name: flag
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SensibleNftSellUtxo'
+                maxItems: 300
+                type: array
+          description: Get sensible nft sell utxo success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get all sensible sell sell utxos for specific address.
+      tags:
+      - sensible
+      x-accepts: application/json
+  /sensible/nft/sell/genesis/{codeHash}/{genesis}/utxo:
+    get:
+      parameters:
+      - description: Code hash of the token.
+        explode: false
+        in: path
+        name: codeHash
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Contract genesis
+        explode: false
+        in: path
+        name: genesis
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Find exact token Index.
+        explode: true
+        in: query
+        name: tokenIndex
+        required: false
+        schema:
+          format: int64
+          type: integer
+        style: form
+      - description: Token index not bigger than this(include this).
+        explode: true
+        in: query
+        name: max
+        required: false
+        schema:
+          format: int64
+          type: integer
+        style: form
+      - description: Token index not less than this(include this).
+        explode: true
+        in: query
+        name: min
+        required: false
+        schema:
+          format: int64
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SensibleNftSellUtxo'
+                maxItems: 300
+                type: array
+          description: Get sensible nft sell utxo success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get all sensible nft token utxos by codeHash and genesisId.
+      tags:
+      - sensible
+      x-accepts: application/json
+  /sensible/nft/auction/codeHash/{codeHash}/nftId/{nftId}/utxo:
+    get:
+      parameters:
+      - description: Code hash of the token.
+        explode: false
+        in: path
+        name: codeHash
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Nft id of this auction.
+        explode: false
+        in: path
+        name: nftId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SensibleNftAuctionUtxo'
+                maxItems: 300
+                type: array
+          description: Get sensible nft sell utxo success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get all sensible nft token utxos by codeHash and genesisId.
       tags:
       - sensible
       x-accepts: application/json
@@ -1430,12 +1497,12 @@ components:
         outputs:
         - address: address
           lockScript: lockScript
-          index: 5
-          value: 5
+          index: 7
+          value: 1
         - address: address
           lockScript: lockScript
-          index: 5
-          value: 5
+          index: 7
+          value: 1
         txDetail:
           blockHash: blockHash
           outputCount: 5
@@ -1448,18 +1515,18 @@ components:
           inputCount: 1
           timestamp: 9
         inputs:
-        - utxoIndex: 6
+        - utxoIndex: 2
           utxoTxid: utxoTxid
           address: address
           unlockScript: unlockScript
-          index: 0
-          value: 1
-        - utxoIndex: 6
+          index: 3
+          value: 4
+        - utxoIndex: 2
           utxoTxid: utxoTxid
           address: address
           unlockScript: unlockScript
-          index: 0
-          value: 1
+          index: 3
+          value: 4
       properties:
         txDetail:
           $ref: '#/components/schemas/BlockTx'
@@ -1476,12 +1543,12 @@ components:
       description: Parsed inputs from raw tx. Use output api to get value and spent
         info.
       example:
-        utxoIndex: 6
+        utxoIndex: 2
         utxoTxid: utxoTxid
         address: address
         unlockScript: unlockScript
-        index: 0
-        value: 1
+        index: 3
+        value: 4
       properties:
         index:
           description: Input index of the tx.
@@ -1508,8 +1575,8 @@ components:
       example:
         address: address
         lockScript: lockScript
-        index: 5
-        value: 5
+        index: 7
+        value: 1
       properties:
         index:
           description: Output index of the tx.
@@ -1569,17 +1636,16 @@ components:
     AddressUtxo:
       description: Utxos by address(or addresses) order by height asc.
       example:
-        outIndex: 6
-        flag: 0
+        outIndex: 0
+        flag: flag
         address: address
         txid: txid
-        value: 1
-        height: 5
+        value: 6
+        height: 1
       properties:
         flag:
           description: paging flag
-          format: int64
-          type: integer
+          type: string
         address:
           description: Address of the utxo
           type: string
@@ -1599,14 +1665,6 @@ components:
       type: object
     AddressTx:
       description: Transaction history of the address.
-      example:
-        income: 1
-        flag: flag
-        address: address
-        txid: txid
-        time: 0
-        outcome: 5
-        height: 6
       properties:
         flag:
           description: Paging flag
@@ -1823,6 +1881,16 @@ components:
           format: int64
           type: integer
       type: object
+    XpubLiteBalance:
+      description: Balance for xpub lite wallet
+      example:
+        balance: 0
+      properties:
+        balance:
+          description: confirmed balance plus unconfirmed balance
+          format: int64
+          type: integer
+      type: object
     XpubUtxo:
       description: Utxo belongs to the specified xpub
       example:
@@ -1960,156 +2028,13 @@ components:
           description: return messages if broadcast failed
           type: string
       type: object
-    SensibleOracleInfo:
-      description: Oracle public key info.
-      example:
-        github: github
-        contact: contact
-        job: job
-        version: version
-        pubKey: pubKey
-      properties:
-        pubKey:
-          description: Oracle public key.
-          type: string
-        contact:
-          description: heqiming@metasv.com
-          type: string
-        job:
-          description: Name of the job.
-          type: string
-        github:
-          description: Github repo(https://github.com/metasv/metasv).
-          type: string
-        version:
-          description: Version of the oracle
-          type: string
-      type: object
-    SensibleSignatureUtxo:
-      description: Signature for utxo.
-      example:
-        sigBE: sigBE
-        padding: padding
-        payload: payload
-        txId: txId
-        index: 0
-        sigLE: sigLE
-      properties:
-        txId:
-          description: Utxo txid.
-          type: string
-        index:
-          description: utxo index
-          type: integer
-        sigBE:
-          description: Big endian signature hex.
-          type: string
-        sigLE:
-          description: Little endian signature hex.
-          type: string
-        padding:
-          description: Signature padding.
-          type: string
-        payload:
-          description: Signature payload(txid, index, value, hash160(script))
-          type: string
-      type: object
-    SensibleSignatureUtxoSpendBy:
-      description: Signature for utxo spent by tx.
-      example:
-        sigBE: sigBE
-        padding: padding
-        payload: payload
-        txId: txId
-        index: 0
-        byTxId: byTxId
-        sigLE: sigLE
-      properties:
-        txId:
-          description: Utxo txid.
-          type: string
-        index:
-          description: utxo index
-          type: integer
-        byTxId:
-          description: Utxo txid.
-          type: string
-        sigBE:
-          description: Big endian signature hex.
-          type: string
-        sigLE:
-          description: Little endian signature hex.
-          type: string
-        padding:
-          description: Signature padding.
-          type: string
-        payload:
-          description: Signature payload(txid, index, value, hash160(script), bytxid)
-          type: string
-      type: object
-    SensibleSignatureUtxoSpendByUtxo:
-      description: Signature for utxo spent by tx, and signature for new utxo.
-      example:
-        padding: padding
-        txId: txId
-        index: 0
-        byTxScript: byTxScript
-        byTxPayload: byTxPayload
-        byTxSigBE: byTxSigBE
-        sigLE: sigLE
-        sigBE: sigBE
-        payload: payload
-        byTxId: byTxId
-        byTxSigLE: byTxSigLE
-        byTxPadding: byTxPadding
-        byTxIndex: 6
-      properties:
-        txId:
-          description: Utxo txid(same as parameter).
-          type: string
-        index:
-          description: utxo index(same as parameter)
-          type: integer
-        byTxId:
-          description: spent txid(same as parameter).
-          type: string
-        byTxIndex:
-          description: spent utxo index(same as parameter).
-          type: integer
-        sigBE:
-          description: Big endian signature hex.
-          type: string
-        sigLE:
-          description: Little endian signature hex.
-          type: string
-        padding:
-          description: Signature padding.
-          type: string
-        payload:
-          description: Signature payload(txid, index, value, hash160(script), bytxid)
-          type: string
-        byTxSigBE:
-          description: Big endian signature hex.
-          type: string
-        byTxSigLE:
-          description: Little endian signature hex.
-          type: string
-        byTxPadding:
-          description: Signature padding.
-          type: string
-        byTxPayload:
-          description: Payload for the new utxo(byTxid, byTxIndex, byTxValue, hash160(byTxScript)).
-          type: string
-        byTxScript:
-          description: Script with hex encoding
-          type: string
-      type: object
     SensibleFtUtxo:
       description: Sensible fungible token Utxo belongs to the specified address
       example:
         symbol: symbol
         satoshi: 5
         address: address
+        flag: flag
         codeHash: codeHash
         txid: txid
         sensibleId: sensibleId
@@ -2166,6 +2091,9 @@ components:
         height:
           description: The height of this utxo, -1 for unconfirmed utxo.
           type: integer
+        flag:
+          description: Flag used for paging
+          type: string
       type: object
     SensibleFtBalance:
       description: Sensible fungible token balance
@@ -2218,69 +2146,249 @@ components:
           description: Unconfirmed balance of the token(In string format).
           type: string
       type: object
-    SensibleFtTransaction:
-      description: Sensible fungible token transaction history for specific address
+    SensibleNftUtxo:
+      description: Sensible non fungible token Utxo belongs to the specified address
       example:
-        income: 6
-        symbol: symbol
+        metaTxid: metaTxid
+        satoshi: 2
         address: address
         flag: flag
+        metaOutputIndex: 1
         codeHash: codeHash
         txid: txid
+        tokenIndex: 5
         sensibleId: sensibleId
         genesis: genesis
-        blockIndex: 5
-        name: name
-        blockTime: 2
-        decimal: 0
-        outcome: 1
-        height: 5
+        tokenSupply: 5
+        satoshiString: satoshiString
+        txIndex: 0
+        height: 6
       properties:
         address:
-          description: The querying address
+          description: Address string of this utxo
           type: string
+        txid:
+          description: Txid for this utxo.
+          type: string
+        txIndex:
+          description: Output index for the Utxo.
+          type: integer
         codeHash:
-          description: Codehash of the token.
+          description: Codehash of this utxo.
           type: string
         genesis:
-          description: Genesis of the token.
+          description: Genesis of this utxo.
           type: string
         sensibleId:
           description: SensibleId of the token
           type: string
-        txid:
-          description: Txid for this transaction.
-          type: string
-        name:
-          description: Name of the token.
-          type: string
-        symbol:
-          description: Symbol of the token.
-          type: string
-        decimal:
-          description: The decimal position.
-          type: integer
-        income:
-          description: Total received token(This token only)
-          format: int64
-          type: integer
-        outcome:
-          description: Total spent token(This token only)
-          format: int64
-          type: integer
         height:
-          description: Height for this transaction. -1 for unconfirmed
+          description: The height of this utxo, -1 for unconfirmed utxo.
           type: integer
-        blockIndex:
-          description: Block index for this transaction, -1 for unconfirmed
+        metaTxid:
+          description: The metanet tx describing the nft.
+          type: string
+        metaOutputIndex:
+          description: Symbol of the token.
           type: integer
-        blockTime:
-          description: Block timestamp for this transaction, if unconfirmed, the time
-            is first seen time.
+        tokenSupply:
+          description: The total supply of this NFT.
+          format: int64
+          type: integer
+        tokenIndex:
+          description: The index of this NFT.
+          format: int64
+          type: integer
+        satoshi:
+          description: Bsv value of the utxo(Irrelavant to token value)
+          format: int64
+          type: integer
+        satoshiString:
+          description: Bsv value of the utxo(In string format)
+          type: string
+        flag:
+          description: Flag used for paging
+          type: string
+      type: object
+    SensibleNftSellUtxo:
+      description: Sensible nft sell Utxo belongs to the specified address
+      example:
+        satoshi: 5
+        metaTxid: metaTxid
+        address: address
+        flag: flag
+        metaOutputIndex: 2
+        codeHash: codeHash
+        isReady: true
+        contractAddress: contractAddress
+        txid: txid
+        tokenIndex: 6
+        sensibleId: sensibleId
+        genesis: genesis
+        price: 1
+        tokenSupply: 7
+        satoshiString: satoshiString
+        txIndex: 0
+        height: 5
+      properties:
+        address:
+          description: Address string of this utxo
+          type: string
+        contractAddress:
+          description: Address calculated from contract hash(p2ch).
+          type: string
+        txid:
+          description: Txid for this utxo.
+          type: string
+        txIndex:
+          description: Output index for the Utxo.
+          type: integer
+        codeHash:
+          description: Codehash of this utxo.
+          type: string
+        genesis:
+          description: Genesis of this utxo.
+          type: string
+        tokenIndex:
+          description: The index of this NFT.
+          format: int64
+          type: integer
+        price:
+          description: the price of nft.
+          format: int64
+          type: integer
+        satoshi:
+          description: Bsv value of the utxo(Irrelavant to token value)
+          format: int64
+          type: integer
+        satoshiString:
+          description: Bsv value of the utxo(In string format)
+          type: string
+        height:
+          description: The height of this utxo, -1 for unconfirmed utxo.
+          type: integer
+        isReady:
+          description: Is current nft transfered into sell contract, If not ready,
+            the following fields will be null
+          type: boolean
+        sensibleId:
+          description: SensibleId of the token
+          type: string
+        metaTxid:
+          description: The metanet tx describing the nft.
+          type: string
+        metaOutputIndex:
+          description: Symbol of the token.
+          type: integer
+        tokenSupply:
+          description: The total supply of this NFT.
           format: int64
           type: integer
         flag:
-          description: Paging flag, format blockTimestamp_blockIndex
+          description: Flag used for paging
+          type: string
+      type: object
+    SensibleNftAuctionUtxo:
+      description: Sensible nft auction Utxo belongs to the specified address
+      example:
+        satoshi: 3
+        address: address
+        bidTimestamp: 1
+        flag: flag
+        codeHash: codeHash
+        isReady: true
+        txid: txid
+        nftId: nftId
+        contractAddress: contractAddress
+        startBsvPrice: 9
+        sensibleId: sensibleId
+        feeRate: 2
+        senderAddressPkh: senderAddressPkh
+        genesis: genesis
+        feeAmount: 5
+        nftCodeHash: nftCodeHash
+        bidBsvPrice: 6
+        bidderAddressPkh: bidderAddressPkh
+        satoshiString: satoshiString
+        feeAddressPkh: feeAddressPkh
+        endTimestamp: 5
+        txIndex: 0
+        height: 7
+      properties:
+        address:
+          description: Address string of this utxo
+          type: string
+        txid:
+          description: Txid for this utxo.
+          type: string
+        txIndex:
+          description: Output index for the Utxo.
+          type: integer
+        bidBsvPrice:
+          description: bidBsvPrice
+          format: int64
+          type: integer
+        bidTimestamp:
+          description: bidTimestamp
+          format: int64
+          type: integer
+        bidderAddressPkh:
+          description: bidderAddressPkh
+          type: string
+        codeHash:
+          description: Codehash of this utxo.
+          type: string
+        genesis:
+          description: Genesis of this utxo.
+          type: string
+        endTimestamp:
+          description: endTimestamp
+          format: int64
+          type: integer
+        feeAddressPkh:
+          description: feeAddressPkh
+          type: string
+        feeAmount:
+          description: feeAmount
+          format: int64
+          type: integer
+        feeRate:
+          description: feeRate
+          type: integer
+        height:
+          description: The height of this utxo, -1 for unconfirmed utxo.
+          type: integer
+        nftCodeHash:
+          description: nftCodeHash
+          type: string
+        nftId:
+          description: nftId of the auctioning fnt
+          type: string
+        senderAddressPkh:
+          description: senderAddressPkh
+          type: string
+        sensibleId:
+          description: SensibleId of the utxo
+          type: string
+        startBsvPrice:
+          description: startBsvPrice
+          format: int64
+          type: integer
+        satoshi:
+          description: Bsv value of the utxo(Irrelavant to token value)
+          format: int64
+          type: integer
+        satoshiString:
+          description: Bsv value of the utxo(In string format)
+          type: string
+        contractAddress:
+          description: The hash160 of the script(p2ch address)
+          type: string
+        isReady:
+          description: this the nft send to this contract address
+          type: boolean
+        flag:
+          description: Flag used for paging
           type: string
       type: object
     UserHourlyTraffic:

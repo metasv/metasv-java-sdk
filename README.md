@@ -1,8 +1,8 @@
 # openapi-java-client
 
 MetaSV API Spec
-- API version: 2.0.0
-  - Build date: 2022-01-03T16:43:19.203251+09:00[Asia/Tokyo]
+- API version: 2.1.1
+  - Build date: 2022-03-15T15:28:46.058485+09:00[Asia/Tokyo]
 
 API definition for MetaSV provided apis
 
@@ -113,35 +113,34 @@ All URIs are relative to *https://apiv2.metasv.com*
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *AddressApi* | [**addressAddressBalanceGet**](docs/AddressApi.md#addressAddressBalanceGet) | **GET** /address/{address}/balance | Get address balance by specific address.
-*AddressApi* | [**addressAddressTxGet**](docs/AddressApi.md#addressAddressTxGet) | **GET** /address/{address}/tx | Get address history by specific address(Only recent 3 months available, Use super address apis if you need more history).
 *AddressApi* | [**addressAddressUtxoGet**](docs/AddressApi.md#addressAddressUtxoGet) | **GET** /address/{address}/utxo | Get address utxos by specific address(100 per page).
 *BlockApi* | [**blockBlockIdGet**](docs/BlockApi.md#blockBlockIdGet) | **GET** /block/{blockId} | Get block request by height or hash
-*BlockApi* | [**blockBlockIdTxsGet**](docs/BlockApi.md#blockBlockIdTxsGet) | **GET** /block/{blockId}/txs | Get tx infos in the block by paging. 100 Items per page.
 *BlockApi* | [**blockGet**](docs/BlockApi.md#blockGet) | **GET** /block | Get recent block list by paging. 30 items per page.
 *BlockApi* | [**blockInfoGet**](docs/BlockApi.md#blockInfoGet) | **GET** /block/info | Get current blockchain info from full node.
 *MerchantApi* | [**merchantBroadcastPost**](docs/MerchantApi.md#merchantBroadcastPost) | **POST** /merchant/broadcast | Broadcast tx to coorperated miner merchant APIs(TAAL).
 *MerchantApi* | [**merchantUtxoPost**](docs/MerchantApi.md#merchantUtxoPost) | **POST** /merchant/utxo | Pick utxos by addresses and amount.
 *OutpointApi* | [**outpointTxidIndexGet**](docs/OutpointApi.md#outpointTxidIndexGet) | **GET** /outpoint/{txid}/{index} | Get tx output(outpoint for vin) spent status.
 *OutpointApi* | [**vinTxidDetailGet**](docs/OutpointApi.md#vinTxidDetailGet) | **GET** /vin/{txid}/detail | Get all output point of vins in the tx with detailed output script.
-*OutpointApi* | [**vinTxidGet**](docs/OutpointApi.md#vinTxidGet) | **GET** /vin/{txid} | Get all output point of vins in the tx(no longer than one month).
 *SensibleApi* | [**sensibleFtAddressAddressBalanceGet**](docs/SensibleApi.md#sensibleFtAddressAddressBalanceGet) | **GET** /sensible/ft/address/{address}/balance | Get all sensible token balances for specific address.
-*SensibleApi* | [**sensibleFtAddressAddressTxsGet**](docs/SensibleApi.md#sensibleFtAddressAddressTxsGet) | **GET** /sensible/ft/address/{address}/txs | Get all sensible token transaction history for specific address.
 *SensibleApi* | [**sensibleFtAddressAddressUtxoGet**](docs/SensibleApi.md#sensibleFtAddressAddressUtxoGet) | **GET** /sensible/ft/address/{address}/utxo | Get all sensible token utxos for specific address.
-*SensibleApi* | [**sensibleOracleGet**](docs/SensibleApi.md#sensibleOracleGet) | **GET** /sensible/oracle | Get metasv sensible oracle info.
-*SensibleApi* | [**sensibleOracleUtxoSpendByTxidIndexByTxidGet**](docs/SensibleApi.md#sensibleOracleUtxoSpendByTxidIndexByTxidGet) | **GET** /sensible/oracle/utxoSpendBy/{txid}/{index}/{byTxid} | Get signature for utxo spend by transaction.
-*SensibleApi* | [**sensibleOracleUtxoSpendByUtxoTxidIndexByTxidByTxIndexGet**](docs/SensibleApi.md#sensibleOracleUtxoSpendByUtxoTxidIndexByTxidByTxIndexGet) | **GET** /sensible/oracle/utxoSpendByUtxo/{txid}/{index}/{byTxid}/{byTxIndex} | Get signature for utxo spend by transaction.
-*SensibleApi* | [**sensibleOracleUtxoTxidIndexGet**](docs/SensibleApi.md#sensibleOracleUtxoTxidIndexGet) | **GET** /sensible/oracle/utxo/{txid}/{index} | Get signature for utxo.
+*SensibleApi* | [**sensibleNftAddressAddressUtxoGet**](docs/SensibleApi.md#sensibleNftAddressAddressUtxoGet) | **GET** /sensible/nft/address/{address}/utxo | Get all sensible nft token utxos for specific address.
+*SensibleApi* | [**sensibleNftAuctionCodeHashCodeHashNftIdNftIdUtxoGet**](docs/SensibleApi.md#sensibleNftAuctionCodeHashCodeHashNftIdNftIdUtxoGet) | **GET** /sensible/nft/auction/codeHash/{codeHash}/nftId/{nftId}/utxo | Get all sensible nft token utxos by codeHash and genesisId.
+*SensibleApi* | [**sensibleNftGenesisCodeHashGenesisUtxoGet**](docs/SensibleApi.md#sensibleNftGenesisCodeHashGenesisUtxoGet) | **GET** /sensible/nft/genesis/{codeHash}/{genesis}/utxo | Get all sensible nft token utxos by codeHash and genesisId.
+*SensibleApi* | [**sensibleNftSellAddressAddressUtxoGet**](docs/SensibleApi.md#sensibleNftSellAddressAddressUtxoGet) | **GET** /sensible/nft/sell/address/{address}/utxo | Get all sensible sell sell utxos for specific address.
+*SensibleApi* | [**sensibleNftSellGenesisCodeHashGenesisUtxoGet**](docs/SensibleApi.md#sensibleNftSellGenesisCodeHashGenesisUtxoGet) | **GET** /sensible/nft/sell/genesis/{codeHash}/{genesis}/utxo | Get all sensible nft token utxos by codeHash and genesisId.
 *TxApi* | [**txBroadcastPost**](docs/TxApi.md#txBroadcastPost) | **POST** /tx/broadcast | Broadcast tx to metasv fullnode.
 *TxApi* | [**txTxidGet**](docs/TxApi.md#txTxidGet) | **GET** /tx/{txid} | Get transaction detail by specific txid.
 *TxApi* | [**txTxidRawGet**](docs/TxApi.md#txTxidRawGet) | **GET** /tx/{txid}/raw | Get transaction raw hex by specific txid.
 *TxApi* | [**txTxidSeenGet**](docs/TxApi.md#txTxidSeenGet) | **GET** /tx/{txid}/seen | Whether MetaSV have seen this tx before. This is a fast approach to know if the tx exist or not.
 *TxApi* | [**vinTxidDetailGet**](docs/TxApi.md#vinTxidDetailGet) | **GET** /vin/{txid}/detail | Get all output point of vins in the tx with detailed output script.
-*TxApi* | [**vinTxidGet**](docs/TxApi.md#vinTxidGet) | **GET** /vin/{txid} | Get all output point of vins in the tx(no longer than one month).
 *UserApi* | [**userClientPubkeyGet**](docs/UserApi.md#userClientPubkeyGet) | **GET** /user/clientPubkey | See https://github.com/metasv/metasv-client-signature for details. Get all trusted public keys.
 *UserApi* | [**userClientPubkeyPost**](docs/UserApi.md#userClientPubkeyPost) | **POST** /user/clientPubkey | See https://github.com/metasv/metasv-client-signature for details. Register new client public key.
 *UserApi* | [**userClientPubkeyPubkeyDelete**](docs/UserApi.md#userClientPubkeyPubkeyDelete) | **DELETE** /user/clientPubkey/{pubkey} | Delete a registered client public key.
 *UserApi* | [**userTrafficGet**](docs/UserApi.md#userTrafficGet) | **GET** /user/traffic | Get traffic details for every hour(valid in six months).
 *UserApi* | [**userTrafficSumGet**](docs/UserApi.md#userTrafficSumGet) | **GET** /user/traffic/sum | Sum all traffic in the current month.
+*XpubApi* | [**xpubLiteXpubAddressAddressGet**](docs/XpubApi.md#xpubLiteXpubAddressAddressGet) | **GET** /xpubLite/{xpub}/address/{address} | Get xpub address type and index. Only index under /0/70 /1/30 is valid. Otherwise not found.
+*XpubApi* | [**xpubLiteXpubBalanceGet**](docs/XpubApi.md#xpubLiteXpubBalanceGet) | **GET** /xpubLite/{xpub}/balance | Get xpub balances including confirmed and unconfirmed.
+*XpubApi* | [**xpubLiteXpubUtxoGet**](docs/XpubApi.md#xpubLiteXpubUtxoGet) | **GET** /xpubLite/{xpub}/utxo | Get xpub utxos by specific xpub(300 per page).
 *XpubApi* | [**xpubPost**](docs/XpubApi.md#xpubPost) | **POST** /xpub | Register a new xpub.
 *XpubApi* | [**xpubXpubAddressAddressGet**](docs/XpubApi.md#xpubXpubAddressAddressGet) | **GET** /xpub/{xpub}/address/{address} | Get xpub address type and index. Only index under max index is valid. Otherwise not found.
 *XpubApi* | [**xpubXpubBalanceGet**](docs/XpubApi.md#xpubXpubBalanceGet) | **GET** /xpub/{xpub}/balance | Get xpub balances including confirmed and unconfirmed.
@@ -149,7 +148,7 @@ Class | Method | HTTP request | Description
 *XpubApi* | [**xpubXpubGet**](docs/XpubApi.md#xpubXpubGet) | **GET** /xpub/{xpub} | Get xpub detail and status. Only registered xpub available.
 *XpubApi* | [**xpubXpubTxsGet**](docs/XpubApi.md#xpubXpubTxsGet) | **GET** /xpub/{xpub}/txs | Get xpub transaction history by specific xpub(100 per page).
 *XpubApi* | [**xpubXpubUtxoCountGet**](docs/XpubApi.md#xpubXpubUtxoCountGet) | **GET** /xpub/{xpub}/utxo/count | Get valid utxo count(including confirmed and unconfirmed).
-*XpubApi* | [**xpubXpubUtxoGet**](docs/XpubApi.md#xpubXpubUtxoGet) | **GET** /xpub/{xpub}/utxo | Get xpub utxos by specific xpub(300 per page).
+*XpubApi* | [**xpubXpubUtxoGet**](docs/XpubApi.md#xpubXpubUtxoGet) | **GET** /xpub/{xpub}/utxo | Get xpub utxos by specific xpub.
 *XpubApi* | [**xpubsCountGet**](docs/XpubApi.md#xpubsCountGet) | **GET** /xpubs/count | Get the total count of registered xpubs.
 *XpubApi* | [**xpubsGet**](docs/XpubApi.md#xpubsGet) | **GET** /xpubs | Get all registered xpub strings. 300 per page.
 
@@ -168,12 +167,10 @@ Class | Method | HTTP request | Description
  - [OutputInfo](docs/OutputInfo.md)
  - [OutputInfoDetail](docs/OutputInfoDetail.md)
  - [SensibleFtBalance](docs/SensibleFtBalance.md)
- - [SensibleFtTransaction](docs/SensibleFtTransaction.md)
  - [SensibleFtUtxo](docs/SensibleFtUtxo.md)
- - [SensibleOracleInfo](docs/SensibleOracleInfo.md)
- - [SensibleSignatureUtxo](docs/SensibleSignatureUtxo.md)
- - [SensibleSignatureUtxoSpendBy](docs/SensibleSignatureUtxoSpendBy.md)
- - [SensibleSignatureUtxoSpendByUtxo](docs/SensibleSignatureUtxoSpendByUtxo.md)
+ - [SensibleNftAuctionUtxo](docs/SensibleNftAuctionUtxo.md)
+ - [SensibleNftSellUtxo](docs/SensibleNftSellUtxo.md)
+ - [SensibleNftUtxo](docs/SensibleNftUtxo.md)
  - [TxDetail](docs/TxDetail.md)
  - [TxInput](docs/TxInput.md)
  - [TxOutput](docs/TxOutput.md)
@@ -185,6 +182,7 @@ Class | Method | HTTP request | Description
  - [XpubAddress](docs/XpubAddress.md)
  - [XpubBalance](docs/XpubBalance.md)
  - [XpubDetail](docs/XpubDetail.md)
+ - [XpubLiteBalance](docs/XpubLiteBalance.md)
  - [XpubRequest](docs/XpubRequest.md)
  - [XpubResult](docs/XpubResult.md)
  - [XpubUtxo](docs/XpubUtxo.md)

@@ -9,7 +9,6 @@ Method | HTTP request | Description
 [**txTxidRawGet**](TxApi.md#txTxidRawGet) | **GET** /tx/{txid}/raw | Get transaction raw hex by specific txid.
 [**txTxidSeenGet**](TxApi.md#txTxidSeenGet) | **GET** /tx/{txid}/seen | Whether MetaSV have seen this tx before. This is a fast approach to know if the tx exist or not.
 [**vinTxidDetailGet**](TxApi.md#vinTxidDetailGet) | **GET** /vin/{txid}/detail | Get all output point of vins in the tx with detailed output script.
-[**vinTxidGet**](TxApi.md#vinTxidGet) | **GET** /vin/{txid} | Get all output point of vins in the tx(no longer than one month).
 
 
 <a name="txBroadcastPost"></a>
@@ -349,71 +348,4 @@ Name | Type | Description  | Notes
 |-------------|-------------|------------------|
 **200** | Get vin list success. |  -  |
 **401** |  |  -  |
-
-<a name="vinTxidGet"></a>
-# **vinTxidGet**
-> List&lt;OutputInfo&gt; vinTxidGet(txid)
-
-Get all output point of vins in the tx(no longer than one month).
-
-Search output points by spent txid. Use this api to get detailed inputs for the tx. (Premium feature will support full history)
-
-### Example
-```java
-// Import classes:
-import com.metasv.client.openapi.ApiClient;
-import com.metasv.client.openapi.ApiException;
-import com.metasv.client.openapi.Configuration;
-import com.metasv.client.openapi.auth.*;
-import com.metasv.client.openapi.models.*;
-import com.metasv.client.openapi.api.TxApi;
-
-public class Example {
-  public static void main(String[] args) {
-    ApiClient defaultClient = Configuration.getDefaultApiClient();
-    defaultClient.setBasePath("https://apiv2.metasv.com");
-    
-    // Configure HTTP bearer authorization: bearerAuth
-    HttpBearerAuth bearerAuth = (HttpBearerAuth) defaultClient.getAuthentication("bearerAuth");
-    bearerAuth.setBearerToken("BEARER TOKEN");
-
-    TxApi apiInstance = new TxApi(defaultClient);
-    String txid = "txid_example"; // String | The txid of the vins
-    try {
-      List<OutputInfo> result = apiInstance.vinTxidGet(txid);
-      System.out.println(result);
-    } catch (ApiException e) {
-      System.err.println("Exception when calling TxApi#vinTxidGet");
-      System.err.println("Status code: " + e.getCode());
-      System.err.println("Reason: " + e.getResponseBody());
-      System.err.println("Response headers: " + e.getResponseHeaders());
-      e.printStackTrace();
-    }
-  }
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **txid** | **String**| The txid of the vins |
-
-### Return type
-
-[**List&lt;OutputInfo&gt;**](OutputInfo.md)
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth)
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-**200** | Get vin list success. |  -  |
 

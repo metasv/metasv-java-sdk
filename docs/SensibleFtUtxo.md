@@ -21,6 +21,7 @@ Name | Type | Description | Notes
 **satoshi** | **Long** | Bsv value of the utxo(Irrelavant to token value) |  [optional]
 **satoshiString** | **String** | Bsv value of the utxo(In string format) |  [optional]
 **height** | **Integer** | The height of this utxo, -1 for unconfirmed utxo. |  [optional]
+**flag** | **String** | Flag used for paging |  [optional]
 
 
 

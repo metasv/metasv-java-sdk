@@ -25,63 +25,36 @@ import io.swagger.annotations.ApiModelProperty;
 import java.io.IOException;
 
 /**
- * Broadcast result
+ * Balance for xpub lite wallet
  */
-@ApiModel(description = "Broadcast result")
+@ApiModel(description = "Balance for xpub lite wallet")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2022-03-15T15:28:46.058485+09:00[Asia/Tokyo]")
-public class BroadcastResult {
-  public static final String SERIALIZED_NAME_TXID = "txid";
-  @SerializedName(SERIALIZED_NAME_TXID)
-  private String txid;
-
-  public static final String SERIALIZED_NAME_MESSAGE = "message";
-  @SerializedName(SERIALIZED_NAME_MESSAGE)
-  private String message;
+public class XpubLiteBalance {
+  public static final String SERIALIZED_NAME_BALANCE = "balance";
+  @SerializedName(SERIALIZED_NAME_BALANCE)
+  private Long balance;
 
 
-  public BroadcastResult txid(String txid) {
+  public XpubLiteBalance balance(Long balance) {
     
-    this.txid = txid;
+    this.balance = balance;
     return this;
   }
 
    /**
-   * return txid if broadcast success
-   * @return txid
+   * confirmed balance plus unconfirmed balance
+   * @return balance
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "return txid if broadcast success")
+  @ApiModelProperty(value = "confirmed balance plus unconfirmed balance")
 
-  public String getTxid() {
-    return txid;
+  public Long getBalance() {
+    return balance;
   }
 
 
-  public void setTxid(String txid) {
-    this.txid = txid;
-  }
-
-
-  public BroadcastResult message(String message) {
-    
-    this.message = message;
-    return this;
-  }
-
-   /**
-   * return messages if broadcast failed
-   * @return message
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "return messages if broadcast failed")
-
-  public String getMessage() {
-    return message;
-  }
-
-
-  public void setMessage(String message) {
-    this.message = message;
+  public void setBalance(Long balance) {
+    this.balance = balance;
   }
 
 
@@ -93,23 +66,21 @@ public class BroadcastResult {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    BroadcastResult broadcastResult = (BroadcastResult) o;
-    return Objects.equals(this.txid, broadcastResult.txid) &&
-        Objects.equals(this.message, broadcastResult.message);
+    XpubLiteBalance xpubLiteBalance = (XpubLiteBalance) o;
+    return Objects.equals(this.balance, xpubLiteBalance.balance);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(txid, message);
+    return Objects.hash(balance);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class BroadcastResult {\n");
-    sb.append("    txid: ").append(toIndentedString(txid)).append("\n");
-    sb.append("    message: ").append(toIndentedString(message)).append("\n");
+    sb.append("class XpubLiteBalance {\n");
+    sb.append("    balance: ").append(toIndentedString(balance)).append("\n");
     sb.append("}");
     return sb.toString();
   }

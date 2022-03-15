@@ -78,7 +78,7 @@ Name | Type | Description  | Notes
 
 <a name="merchantUtxoPost"></a>
 # **merchantUtxoPost**
-> List&lt;AddressUtxo&gt; merchantUtxoPost(confirmed, utxoPickRequest)
+> List&lt;AddressUtxo&gt; merchantUtxoPost(utxoPickRequest)
 
 Pick utxos by addresses and amount.
 
@@ -104,10 +104,9 @@ public class Example {
     bearerAuth.setBearerToken("BEARER TOKEN");
 
     MerchantApi apiInstance = new MerchantApi(defaultClient);
-    String confirmed = "confirmed_example"; // String | Whether the utxo is confirmed, \"true\" for confirmed, \"false\" for unconfirmed, null for both
     UtxoPickRequest utxoPickRequest = new UtxoPickRequest(); // UtxoPickRequest | 
     try {
-      List<AddressUtxo> result = apiInstance.merchantUtxoPost(confirmed, utxoPickRequest);
+      List<AddressUtxo> result = apiInstance.merchantUtxoPost(utxoPickRequest);
       System.out.println(result);
     } catch (ApiException e) {
       System.err.println("Exception when calling MerchantApi#merchantUtxoPost");
@@ -124,7 +123,6 @@ public class Example {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **confirmed** | **String**| Whether the utxo is confirmed, \&quot;true\&quot; for confirmed, \&quot;false\&quot; for unconfirmed, null for both | [optional]
  **utxoPickRequest** | [**UtxoPickRequest**](UtxoPickRequest.md)|  | [optional]
 
 ### Return type
