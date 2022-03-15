@@ -28,7 +28,7 @@ import java.io.IOException;
  * Summed outbound traffic within particular hour.
  */
 @ApiModel(description = "Summed outbound traffic within particular hour.")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2022-03-15T15:32:54.023410+09:00[Asia/Tokyo]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2022-03-15T15:39:16.291866+09:00[Asia/Tokyo]")
 public class UserHourlyTraffic {
   public static final String SERIALIZED_NAME_HOUR_TIME = "hourTime";
   @SerializedName(SERIALIZED_NAME_HOUR_TIME)

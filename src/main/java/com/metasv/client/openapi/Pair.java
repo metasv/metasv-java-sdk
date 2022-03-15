@@ -13,7 +13,7 @@
 
 package com.metasv.client.openapi;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2022-03-15T15:32:54.023410+09:00[Asia/Tokyo]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2022-03-15T15:39:16.291866+09:00[Asia/Tokyo]")
 public class Pair {
     private String name = "";
     private String value = "";

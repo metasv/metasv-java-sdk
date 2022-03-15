@@ -7,7 +7,7 @@
   "dateLibrary": "legacy",
   "artifactDescription": "Java Client SDK for MetaSV API.",
   "artifactUrl": "https://github.com/metasv/metasv-java-sdk",
-  "artifactVersion": "2.0.0",
+  "artifactVersion": "2.1.1",
   "developerEmail": "heqiming@metasv.com",
   "developerOrganization": "MetaSV.com",
   "developerOrganizationUrl": "https://metasv.com/",
