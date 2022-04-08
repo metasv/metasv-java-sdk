@@ -29,28 +29,32 @@ import java.io.IOException;
  */
 @ApiModel(description = "Broadcast result")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2022-04-08T16:23:39.010660+09:00[Asia/Tokyo]")
-public class BroadcastResult {
+public class AsyncBroadcastResult {
   public static final String SERIALIZED_NAME_TXID = "txid";
   @SerializedName(SERIALIZED_NAME_TXID)
   private String txid;
+
+  public static final String SERIALIZED_NAME_STATE = "state";
+  @SerializedName(SERIALIZED_NAME_STATE)
+  private String state;
 
   public static final String SERIALIZED_NAME_MESSAGE = "message";
   @SerializedName(SERIALIZED_NAME_MESSAGE)
   private String message;
 
 
-  public BroadcastResult txid(String txid) {
+  public AsyncBroadcastResult txid(String txid) {
     
     this.txid = txid;
     return this;
   }
 
    /**
-   * return txid if broadcast success
+   * the txid of this tx
    * @return txid
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "return txid if broadcast success")
+  @ApiModelProperty(value = "the txid of this tx")
 
   public String getTxid() {
     return txid;
@@ -62,7 +66,30 @@ public class BroadcastResult {
   }
 
 
-  public BroadcastResult message(String message) {
+  public AsyncBroadcastResult state(String state) {
+    
+    this.state = state;
+    return this;
+  }
+
+   /**
+   * the state of this tx, possible values PENDING, BROADCASTED, INVALID, UNKNOWN
+   * @return state
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "the state of this tx, possible values PENDING, BROADCASTED, INVALID, UNKNOWN")
+
+  public String getState() {
+    return state;
+  }
+
+
+  public void setState(String state) {
+    this.state = state;
+  }
+
+
+  public AsyncBroadcastResult message(String message) {
     
     this.message = message;
     return this;
@@ -93,22 +120,24 @@ public class BroadcastResult {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    BroadcastResult broadcastResult = (BroadcastResult) o;
-    return Objects.equals(this.txid, broadcastResult.txid) &&
-        Objects.equals(this.message, broadcastResult.message);
+    AsyncBroadcastResult asyncBroadcastResult = (AsyncBroadcastResult) o;
+    return Objects.equals(this.txid, asyncBroadcastResult.txid) &&
+        Objects.equals(this.state, asyncBroadcastResult.state) &&
+        Objects.equals(this.message, asyncBroadcastResult.message);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(txid, message);
+    return Objects.hash(txid, state, message);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class BroadcastResult {\n");
+    sb.append("class AsyncBroadcastResult {\n");
     sb.append("    txid: ").append(toIndentedString(txid)).append("\n");
+    sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    message: ").append(toIndentedString(message)).append("\n");
     sb.append("}");
     return sb.toString();

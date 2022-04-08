@@ -25,11 +25,11 @@ import io.swagger.annotations.ApiModelProperty;
 import java.io.IOException;
 
 /**
- * Sensible nft sell Utxo belongs to the specified address
+ * Sensible nft sell v2 Utxo belongs to the specified address
  */
-@ApiModel(description = "Sensible nft sell Utxo belongs to the specified address")
+@ApiModel(description = "Sensible nft sell v2 Utxo belongs to the specified address")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2022-04-08T16:23:39.010660+09:00[Asia/Tokyo]")
-public class SensibleNftSellUtxo {
+public class SensibleNftSellV2Utxo {
   public static final String SERIALIZED_NAME_ADDRESS = "address";
   @SerializedName(SERIALIZED_NAME_ADDRESS)
   private String address;
@@ -61,6 +61,22 @@ public class SensibleNftSellUtxo {
   public static final String SERIALIZED_NAME_PRICE = "price";
   @SerializedName(SERIALIZED_NAME_PRICE)
   private Long price;
+
+  public static final String SERIALIZED_NAME_FEE_ADDRESS_PKH = "feeAddressPkh";
+  @SerializedName(SERIALIZED_NAME_FEE_ADDRESS_PKH)
+  private String feeAddressPkh;
+
+  public static final String SERIALIZED_NAME_FEE_RATE = "feeRate";
+  @SerializedName(SERIALIZED_NAME_FEE_RATE)
+  private Integer feeRate;
+
+  public static final String SERIALIZED_NAME_NFT_ID = "nftId";
+  @SerializedName(SERIALIZED_NAME_NFT_ID)
+  private String nftId;
+
+  public static final String SERIALIZED_NAME_SELLER_ADDRESS_PKH = "sellerAddressPkh";
+  @SerializedName(SERIALIZED_NAME_SELLER_ADDRESS_PKH)
+  private String sellerAddressPkh;
 
   public static final String SERIALIZED_NAME_SATOSHI = "satoshi";
   @SerializedName(SERIALIZED_NAME_SATOSHI)
@@ -99,7 +115,7 @@ public class SensibleNftSellUtxo {
   private String flag;
 
 
-  public SensibleNftSellUtxo address(String address) {
+  public SensibleNftSellV2Utxo address(String address) {
     
     this.address = address;
     return this;
@@ -122,7 +138,7 @@ public class SensibleNftSellUtxo {
   }
 
 
-  public SensibleNftSellUtxo contractAddress(String contractAddress) {
+  public SensibleNftSellV2Utxo contractAddress(String contractAddress) {
     
     this.contractAddress = contractAddress;
     return this;
@@ -145,7 +161,7 @@ public class SensibleNftSellUtxo {
   }
 
 
-  public SensibleNftSellUtxo txid(String txid) {
+  public SensibleNftSellV2Utxo txid(String txid) {
     
     this.txid = txid;
     return this;
@@ -168,7 +184,7 @@ public class SensibleNftSellUtxo {
   }
 
 
-  public SensibleNftSellUtxo txIndex(Integer txIndex) {
+  public SensibleNftSellV2Utxo txIndex(Integer txIndex) {
     
     this.txIndex = txIndex;
     return this;
@@ -191,7 +207,7 @@ public class SensibleNftSellUtxo {
   }
 
 
-  public SensibleNftSellUtxo codeHash(String codeHash) {
+  public SensibleNftSellV2Utxo codeHash(String codeHash) {
     
     this.codeHash = codeHash;
     return this;
@@ -214,7 +230,7 @@ public class SensibleNftSellUtxo {
   }
 
 
-  public SensibleNftSellUtxo genesis(String genesis) {
+  public SensibleNftSellV2Utxo genesis(String genesis) {
     
     this.genesis = genesis;
     return this;
@@ -237,7 +253,7 @@ public class SensibleNftSellUtxo {
   }
 
 
-  public SensibleNftSellUtxo tokenIndex(Long tokenIndex) {
+  public SensibleNftSellV2Utxo tokenIndex(Long tokenIndex) {
     
     this.tokenIndex = tokenIndex;
     return this;
@@ -260,7 +276,7 @@ public class SensibleNftSellUtxo {
   }
 
 
-  public SensibleNftSellUtxo price(Long price) {
+  public SensibleNftSellV2Utxo price(Long price) {
     
     this.price = price;
     return this;
@@ -283,7 +299,99 @@ public class SensibleNftSellUtxo {
   }
 
 
-  public SensibleNftSellUtxo satoshi(Long satoshi) {
+  public SensibleNftSellV2Utxo feeAddressPkh(String feeAddressPkh) {
+    
+    this.feeAddressPkh = feeAddressPkh;
+    return this;
+  }
+
+   /**
+   * The address to receive fees.
+   * @return feeAddressPkh
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The address to receive fees.")
+
+  public String getFeeAddressPkh() {
+    return feeAddressPkh;
+  }
+
+
+  public void setFeeAddressPkh(String feeAddressPkh) {
+    this.feeAddressPkh = feeAddressPkh;
+  }
+
+
+  public SensibleNftSellV2Utxo feeRate(Integer feeRate) {
+    
+    this.feeRate = feeRate;
+    return this;
+  }
+
+   /**
+   * feeRate
+   * @return feeRate
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "feeRate")
+
+  public Integer getFeeRate() {
+    return feeRate;
+  }
+
+
+  public void setFeeRate(Integer feeRate) {
+    this.feeRate = feeRate;
+  }
+
+
+  public SensibleNftSellV2Utxo nftId(String nftId) {
+    
+    this.nftId = nftId;
+    return this;
+  }
+
+   /**
+   * nftId
+   * @return nftId
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "nftId")
+
+  public String getNftId() {
+    return nftId;
+  }
+
+
+  public void setNftId(String nftId) {
+    this.nftId = nftId;
+  }
+
+
+  public SensibleNftSellV2Utxo sellerAddressPkh(String sellerAddressPkh) {
+    
+    this.sellerAddressPkh = sellerAddressPkh;
+    return this;
+  }
+
+   /**
+   * The address pkh of seller
+   * @return sellerAddressPkh
+  **/
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The address pkh of seller")
+
+  public String getSellerAddressPkh() {
+    return sellerAddressPkh;
+  }
+
+
+  public void setSellerAddressPkh(String sellerAddressPkh) {
+    this.sellerAddressPkh = sellerAddressPkh;
+  }
+
+
+  public SensibleNftSellV2Utxo satoshi(Long satoshi) {
     
     this.satoshi = satoshi;
     return this;
@@ -306,7 +414,7 @@ public class SensibleNftSellUtxo {
   }
 
 
-  public SensibleNftSellUtxo satoshiString(String satoshiString) {
+  public SensibleNftSellV2Utxo satoshiString(String satoshiString) {
     
     this.satoshiString = satoshiString;
     return this;
@@ -329,7 +437,7 @@ public class SensibleNftSellUtxo {
   }
 
 
-  public SensibleNftSellUtxo height(Integer height) {
+  public SensibleNftSellV2Utxo height(Integer height) {
     
     this.height = height;
     return this;
@@ -352,7 +460,7 @@ public class SensibleNftSellUtxo {
   }
 
 
-  public SensibleNftSellUtxo isReady(Boolean isReady) {
+  public SensibleNftSellV2Utxo isReady(Boolean isReady) {
     
     this.isReady = isReady;
     return this;
@@ -375,7 +483,7 @@ public class SensibleNftSellUtxo {
   }
 
 
-  public SensibleNftSellUtxo sensibleId(String sensibleId) {
+  public SensibleNftSellV2Utxo sensibleId(String sensibleId) {
     
     this.sensibleId = sensibleId;
     return this;
@@ -398,7 +506,7 @@ public class SensibleNftSellUtxo {
   }
 
 
-  public SensibleNftSellUtxo metaTxid(String metaTxid) {
+  public SensibleNftSellV2Utxo metaTxid(String metaTxid) {
     
     this.metaTxid = metaTxid;
     return this;
@@ -421,7 +529,7 @@ public class SensibleNftSellUtxo {
   }
 
 
-  public SensibleNftSellUtxo metaOutputIndex(Integer metaOutputIndex) {
+  public SensibleNftSellV2Utxo metaOutputIndex(Integer metaOutputIndex) {
     
     this.metaOutputIndex = metaOutputIndex;
     return this;
@@ -444,7 +552,7 @@ public class SensibleNftSellUtxo {
   }
 
 
-  public SensibleNftSellUtxo tokenSupply(Long tokenSupply) {
+  public SensibleNftSellV2Utxo tokenSupply(Long tokenSupply) {
     
     this.tokenSupply = tokenSupply;
     return this;
@@ -467,7 +575,7 @@ public class SensibleNftSellUtxo {
   }
 
 
-  public SensibleNftSellUtxo flag(String flag) {
+  public SensibleNftSellV2Utxo flag(String flag) {
     
     this.flag = flag;
     return this;
@@ -498,36 +606,40 @@ public class SensibleNftSellUtxo {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    SensibleNftSellUtxo sensibleNftSellUtxo = (SensibleNftSellUtxo) o;
-    return Objects.equals(this.address, sensibleNftSellUtxo.address) &&
-        Objects.equals(this.contractAddress, sensibleNftSellUtxo.contractAddress) &&
-        Objects.equals(this.txid, sensibleNftSellUtxo.txid) &&
-        Objects.equals(this.txIndex, sensibleNftSellUtxo.txIndex) &&
-        Objects.equals(this.codeHash, sensibleNftSellUtxo.codeHash) &&
-        Objects.equals(this.genesis, sensibleNftSellUtxo.genesis) &&
-        Objects.equals(this.tokenIndex, sensibleNftSellUtxo.tokenIndex) &&
-        Objects.equals(this.price, sensibleNftSellUtxo.price) &&
-        Objects.equals(this.satoshi, sensibleNftSellUtxo.satoshi) &&
-        Objects.equals(this.satoshiString, sensibleNftSellUtxo.satoshiString) &&
-        Objects.equals(this.height, sensibleNftSellUtxo.height) &&
-        Objects.equals(this.isReady, sensibleNftSellUtxo.isReady) &&
-        Objects.equals(this.sensibleId, sensibleNftSellUtxo.sensibleId) &&
-        Objects.equals(this.metaTxid, sensibleNftSellUtxo.metaTxid) &&
-        Objects.equals(this.metaOutputIndex, sensibleNftSellUtxo.metaOutputIndex) &&
-        Objects.equals(this.tokenSupply, sensibleNftSellUtxo.tokenSupply) &&
-        Objects.equals(this.flag, sensibleNftSellUtxo.flag);
+    SensibleNftSellV2Utxo sensibleNftSellV2Utxo = (SensibleNftSellV2Utxo) o;
+    return Objects.equals(this.address, sensibleNftSellV2Utxo.address) &&
+        Objects.equals(this.contractAddress, sensibleNftSellV2Utxo.contractAddress) &&
+        Objects.equals(this.txid, sensibleNftSellV2Utxo.txid) &&
+        Objects.equals(this.txIndex, sensibleNftSellV2Utxo.txIndex) &&
+        Objects.equals(this.codeHash, sensibleNftSellV2Utxo.codeHash) &&
+        Objects.equals(this.genesis, sensibleNftSellV2Utxo.genesis) &&
+        Objects.equals(this.tokenIndex, sensibleNftSellV2Utxo.tokenIndex) &&
+        Objects.equals(this.price, sensibleNftSellV2Utxo.price) &&
+        Objects.equals(this.feeAddressPkh, sensibleNftSellV2Utxo.feeAddressPkh) &&
+        Objects.equals(this.feeRate, sensibleNftSellV2Utxo.feeRate) &&
+        Objects.equals(this.nftId, sensibleNftSellV2Utxo.nftId) &&
+        Objects.equals(this.sellerAddressPkh, sensibleNftSellV2Utxo.sellerAddressPkh) &&
+        Objects.equals(this.satoshi, sensibleNftSellV2Utxo.satoshi) &&
+        Objects.equals(this.satoshiString, sensibleNftSellV2Utxo.satoshiString) &&
+        Objects.equals(this.height, sensibleNftSellV2Utxo.height) &&
+        Objects.equals(this.isReady, sensibleNftSellV2Utxo.isReady) &&
+        Objects.equals(this.sensibleId, sensibleNftSellV2Utxo.sensibleId) &&
+        Objects.equals(this.metaTxid, sensibleNftSellV2Utxo.metaTxid) &&
+        Objects.equals(this.metaOutputIndex, sensibleNftSellV2Utxo.metaOutputIndex) &&
+        Objects.equals(this.tokenSupply, sensibleNftSellV2Utxo.tokenSupply) &&
+        Objects.equals(this.flag, sensibleNftSellV2Utxo.flag);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(address, contractAddress, txid, txIndex, codeHash, genesis, tokenIndex, price, satoshi, satoshiString, height, isReady, sensibleId, metaTxid, metaOutputIndex, tokenSupply, flag);
+    return Objects.hash(address, contractAddress, txid, txIndex, codeHash, genesis, tokenIndex, price, feeAddressPkh, feeRate, nftId, sellerAddressPkh, satoshi, satoshiString, height, isReady, sensibleId, metaTxid, metaOutputIndex, tokenSupply, flag);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class SensibleNftSellUtxo {\n");
+    sb.append("class SensibleNftSellV2Utxo {\n");
     sb.append("    address: ").append(toIndentedString(address)).append("\n");
     sb.append("    contractAddress: ").append(toIndentedString(contractAddress)).append("\n");
     sb.append("    txid: ").append(toIndentedString(txid)).append("\n");
@@ -536,6 +648,10 @@ public class SensibleNftSellUtxo {
     sb.append("    genesis: ").append(toIndentedString(genesis)).append("\n");
     sb.append("    tokenIndex: ").append(toIndentedString(tokenIndex)).append("\n");
     sb.append("    price: ").append(toIndentedString(price)).append("\n");
+    sb.append("    feeAddressPkh: ").append(toIndentedString(feeAddressPkh)).append("\n");
+    sb.append("    feeRate: ").append(toIndentedString(feeRate)).append("\n");
+    sb.append("    nftId: ").append(toIndentedString(nftId)).append("\n");
+    sb.append("    sellerAddressPkh: ").append(toIndentedString(sellerAddressPkh)).append("\n");
     sb.append("    satoshi: ").append(toIndentedString(satoshi)).append("\n");
     sb.append("    satoshiString: ").append(toIndentedString(satoshiString)).append("\n");
     sb.append("    height: ").append(toIndentedString(height)).append("\n");

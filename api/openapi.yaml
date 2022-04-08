@@ -8,7 +8,7 @@ info:
     name: MIT License
     url: https://opensource.org/licenses/MIT
   title: MetaSV API Spec
-  version: 2.1.1
+  version: 2.1.4
 servers:
 - url: https://apiv2.metasv.com
 tags:
@@ -215,6 +215,55 @@ paths:
       tags:
       - tx
       x-contentType: application/json
+      x-accepts: application/json
+  /tx/broadcast/async:
+    post:
+      description: This api will not broadcast to metasv fullnode directly, the tx
+        will be cached and later send to fullnode.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TxRaw'
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: Acknowledged. txid returned dsha256(rawHex).
+      security:
+      - bearerAuth: []
+      summary: Broadcast tx to metasv asyn(tx size no bigger than 250K).
+      tags:
+      - tx
+      x-contentType: application/json
+      x-accepts: application/json
+  /tx/broadcast/async/{txid}/state:
+    get:
+      description: Use this api to query async broadcast status, possible status PENDING,
+        BROADCASTED, INVALID, UNKNOWN
+      parameters:
+      - description: the request ID to search, txhash
+        explode: false
+        in: path
+        name: txid
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncBroadcastResult'
+          description: Acknowledged. txid returned dsha256(rawHex).
+      security:
+      - bearerAuth: []
+      summary: Query aync broadcast result.
+      tags:
+      - tx
       x-accepts: application/json
   /address/{address}/balance:
     get:
@@ -908,6 +957,50 @@ paths:
       tags:
       - sensible
       x-accepts: application/json
+  /sensible/ft/address/{address}/balance/confirmed:
+    get:
+      parameters:
+      - description: the requested address
+        explode: false
+        in: path
+        name: address
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Filter by contract code hash
+        explode: true
+        in: query
+        name: codeHash
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: Filter by contract genesis
+        explode: true
+        in: query
+        name: genesis
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                format: int64
+                type: integer
+          description: Get sensible ft balances succes（ingore unconfirmed txs）.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get all sensible token balances for specific address ignoring all unconfirmed
+        txs.
+      tags:
+      - sensible
+      x-accepts: application/json
   /sensible/nft/address/{address}/utxo:
     get:
       parameters:
@@ -958,6 +1051,77 @@ paths:
       security:
       - bearerAuth: []
       summary: Get all sensible nft token utxos for specific address.
+      tags:
+      - sensible
+      x-accepts: application/json
+  /sensible/nft/address/{address}/summary:
+    get:
+      parameters:
+      - description: the requested address
+        explode: false
+        in: path
+        name: address
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SensibleNftAddressSummary'
+                maxItems: 300
+                type: array
+          description: Get sensible nft utxo success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get nft summary(NFT count group by genesis) for address.
+      tags:
+      - sensible
+      x-accepts: application/json
+  /sensible/nft/address/{address}/count/confirmed:
+    get:
+      parameters:
+      - description: the requested address
+        explode: false
+        in: path
+        name: address
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Filter by contract code hash
+        explode: true
+        in: query
+        name: codeHash
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: Filter by contract genesis
+        explode: true
+        in: query
+        name: genesis
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: integer
+          description: Get sensible nft utxo success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get confirmed utxo count for specific nft(ignore all unconfirmed txs).
       tags:
       - sensible
       x-accepts: application/json
@@ -1022,6 +1186,44 @@ paths:
       security:
       - bearerAuth: []
       summary: Get all sensible nft token utxos by codeHash and genesisId.
+      tags:
+      - sensible
+      x-accepts: application/json
+  /sensible/nft/genesis/{codeHash}/{genesis}/summary:
+    get:
+      parameters:
+      - description: Code hash of the token.
+        explode: false
+        in: path
+        name: codeHash
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Contract genesis
+        explode: false
+        in: path
+        name: genesis
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SensibleNftGenesisSummary'
+                maxItems: 300
+                type: array
+          description: Get sensible nft utxo success(result cached for 60s)..
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get nft summary(count group by address) for specific codeHash and genesisId(result
+        cached for 60s).
       tags:
       - sensible
       x-accepts: application/json
@@ -1131,6 +1333,123 @@ paths:
               schema:
                 items:
                   $ref: '#/components/schemas/SensibleNftSellUtxo'
+                maxItems: 300
+                type: array
+          description: Get sensible nft sell utxo success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get all sensible nft token utxos by codeHash and genesisId.
+      tags:
+      - sensible
+      x-accepts: application/json
+  /sensible/nft/sellV2/address/{address}/utxo:
+    get:
+      parameters:
+      - description: Owner address.
+        explode: false
+        in: path
+        name: address
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Filter by contract code hash
+        explode: true
+        in: query
+        name: codeHash
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Filter by contract genesis
+        explode: true
+        in: query
+        name: genesis
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The flag of the last query Item(Paging flag)
+        explode: true
+        in: query
+        name: flag
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SensibleNftSellV2Utxo'
+                maxItems: 300
+                type: array
+          description: Get sensible nft sell utxo success.
+        "401":
+          $ref: '#/components/schemas/UnauthorizedError'
+      security:
+      - bearerAuth: []
+      summary: Get all sensible sell sell utxos for specific address.
+      tags:
+      - sensible
+      x-accepts: application/json
+  /sensible/nft/sellV2/genesis/{codeHash}/{genesis}/utxo:
+    get:
+      parameters:
+      - description: Code hash of the token.
+        explode: false
+        in: path
+        name: codeHash
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Contract genesis
+        explode: false
+        in: path
+        name: genesis
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Find exact token Index.
+        explode: true
+        in: query
+        name: tokenIndex
+        required: false
+        schema:
+          format: int64
+          type: integer
+        style: form
+      - description: Token index not bigger than this(include this).
+        explode: true
+        in: query
+        name: max
+        required: false
+        schema:
+          format: int64
+          type: integer
+        style: form
+      - description: Token index not less than this(include this).
+        explode: true
+        in: query
+        name: min
+        required: false
+        schema:
+          format: int64
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SensibleNftSellV2Utxo'
                 maxItems: 300
                 type: array
           description: Get sensible nft sell utxo success.
@@ -1609,6 +1928,24 @@ components:
       properties:
         txid:
           description: return txid if broadcast success
+          type: string
+        message:
+          description: return messages if broadcast failed
+          type: string
+      type: object
+    AsyncBroadcastResult:
+      description: Broadcast result
+      example:
+        txid: txid
+        state: state
+        message: message
+      properties:
+        txid:
+          description: the txid of this tx
+          type: string
+        state:
+          description: the state of this tx, possible values PENDING, BROADCASTED,
+            INVALID, UNKNOWN
           type: string
         message:
           description: return messages if broadcast failed
@@ -2210,6 +2547,70 @@ components:
           description: Flag used for paging
           type: string
       type: object
+    SensibleNftAddressSummary:
+      description: Get nft summary(count group by genesis) for specific address.
+      example:
+        genesis: genesis
+        metaTxid: metaTxid
+        metaOutputIndex: 0
+        codeHash: codeHash
+        tokenSupply: 6
+        count: 1
+        sensibleId: sensibleId
+      properties:
+        codeHash:
+          description: Codehash of this NFT series.
+          type: string
+        genesis:
+          description: Genesis of this NFT series..
+          type: string
+        sensibleId:
+          description: SensibleId of the token
+          type: string
+        metaTxid:
+          description: The metanet tx describing the nft.
+          type: string
+        metaOutputIndex:
+          description: Symbol of the token.
+          type: integer
+        tokenSupply:
+          description: The total supply of this NFT.
+          format: int64
+          type: integer
+        count:
+          description: The count of this nft that the address owns.
+          type: integer
+      type: object
+    SensibleNftGenesisSummary:
+      description: Get summary(count group by address) for specific genesis.
+      example:
+        metaTxid: metaTxid
+        address: address
+        metaOutputIndex: 0
+        tokenSupply: 6
+        count: 1
+        sensibleId: sensibleId
+      properties:
+        address:
+          description: Owner address.
+          type: string
+        sensibleId:
+          description: SensibleId of the token
+          type: string
+        metaTxid:
+          description: The metanet tx describing the nft.
+          type: string
+        metaOutputIndex:
+          description: Symbol of the token.
+          type: integer
+        tokenSupply:
+          description: The total supply of this NFT.
+          format: int64
+          type: integer
+        count:
+          description: The count of this nft that the address owns.
+          type: integer
+      type: object
     SensibleNftSellUtxo:
       description: Sensible nft sell Utxo belongs to the specified address
       example:
@@ -2257,6 +2658,100 @@ components:
           description: the price of nft.
           format: int64
           type: integer
+        satoshi:
+          description: Bsv value of the utxo(Irrelavant to token value)
+          format: int64
+          type: integer
+        satoshiString:
+          description: Bsv value of the utxo(In string format)
+          type: string
+        height:
+          description: The height of this utxo, -1 for unconfirmed utxo.
+          type: integer
+        isReady:
+          description: Is current nft transfered into sell contract, If not ready,
+            the following fields will be null
+          type: boolean
+        sensibleId:
+          description: SensibleId of the token
+          type: string
+        metaTxid:
+          description: The metanet tx describing the nft.
+          type: string
+        metaOutputIndex:
+          description: Symbol of the token.
+          type: integer
+        tokenSupply:
+          description: The total supply of this NFT.
+          format: int64
+          type: integer
+        flag:
+          description: Flag used for paging
+          type: string
+      type: object
+    SensibleNftSellV2Utxo:
+      description: Sensible nft sell v2 Utxo belongs to the specified address
+      example:
+        satoshi: 5
+        metaTxid: metaTxid
+        address: address
+        flag: flag
+        metaOutputIndex: 7
+        codeHash: codeHash
+        sellerAddressPkh: sellerAddressPkh
+        isReady: true
+        contractAddress: contractAddress
+        txid: txid
+        nftId: nftId
+        tokenIndex: 6
+        sensibleId: sensibleId
+        feeRate: 5
+        genesis: genesis
+        price: 1
+        tokenSupply: 9
+        satoshiString: satoshiString
+        feeAddressPkh: feeAddressPkh
+        txIndex: 0
+        height: 2
+      properties:
+        address:
+          description: Address string of this utxo
+          type: string
+        contractAddress:
+          description: Address calculated from contract hash(p2ch).
+          type: string
+        txid:
+          description: Txid for this utxo.
+          type: string
+        txIndex:
+          description: Output index for the Utxo.
+          type: integer
+        codeHash:
+          description: Codehash of this utxo.
+          type: string
+        genesis:
+          description: Genesis of this utxo.
+          type: string
+        tokenIndex:
+          description: The index of this NFT.
+          format: int64
+          type: integer
+        price:
+          description: the price of nft.
+          format: int64
+          type: integer
+        feeAddressPkh:
+          description: The address to receive fees.
+          type: string
+        feeRate:
+          description: feeRate
+          type: integer
+        nftId:
+          description: nftId
+          type: string
+        sellerAddressPkh:
+          description: The address pkh of seller
+          type: string
         satoshi:
           description: Bsv value of the utxo(Irrelavant to token value)
           format: int64

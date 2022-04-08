@@ -1,8 +1,8 @@
 # openapi-java-client
 
 MetaSV API Spec
-- API version: 2.1.1
-  - Build date: 2022-03-15T16:54:02.268785+09:00[Asia/Tokyo]
+- API version: 2.1.4
+  - Build date: 2022-04-08T16:23:39.010660+09:00[Asia/Tokyo]
 
 API definition for MetaSV provided apis
 
@@ -40,7 +40,7 @@ Add this dependency to your project's POM:
 <dependency>
   <groupId>com.metasv</groupId>
   <artifactId>openapi-java-client</artifactId>
-  <version>2.1.1</version>
+  <version>2.1.4</version>
   <scope>compile</scope>
 </dependency>
 ```
@@ -50,7 +50,7 @@ Add this dependency to your project's POM:
 Add this dependency to your project's build file:
 
 ```groovy
-compile "com.metasv:openapi-java-client:2.1.1"
+compile "com.metasv:openapi-java-client:2.1.4"
 ```
 
 ### Others
@@ -63,7 +63,7 @@ mvn clean package
 
 Then manually install the following JARs:
 
-* `target/openapi-java-client-2.1.1.jar`
+* `target/openapi-java-client-2.1.4.jar`
 * `target/lib/*.jar`
 
 ## Getting Started
@@ -121,13 +121,21 @@ Class | Method | HTTP request | Description
 *MerchantApi* | [**merchantUtxoPost**](docs/MerchantApi.md#merchantUtxoPost) | **POST** /merchant/utxo | Pick utxos by addresses and amount.
 *OutpointApi* | [**outpointTxidIndexGet**](docs/OutpointApi.md#outpointTxidIndexGet) | **GET** /outpoint/{txid}/{index} | Get tx output(outpoint for vin) spent status.
 *OutpointApi* | [**vinTxidDetailGet**](docs/OutpointApi.md#vinTxidDetailGet) | **GET** /vin/{txid}/detail | Get all output point of vins in the tx with detailed output script.
+*SensibleApi* | [**sensibleFtAddressAddressBalanceConfirmedGet**](docs/SensibleApi.md#sensibleFtAddressAddressBalanceConfirmedGet) | **GET** /sensible/ft/address/{address}/balance/confirmed | Get all sensible token balances for specific address ignoring all unconfirmed txs.
 *SensibleApi* | [**sensibleFtAddressAddressBalanceGet**](docs/SensibleApi.md#sensibleFtAddressAddressBalanceGet) | **GET** /sensible/ft/address/{address}/balance | Get all sensible token balances for specific address.
 *SensibleApi* | [**sensibleFtAddressAddressUtxoGet**](docs/SensibleApi.md#sensibleFtAddressAddressUtxoGet) | **GET** /sensible/ft/address/{address}/utxo | Get all sensible token utxos for specific address.
+*SensibleApi* | [**sensibleNftAddressAddressCountConfirmedGet**](docs/SensibleApi.md#sensibleNftAddressAddressCountConfirmedGet) | **GET** /sensible/nft/address/{address}/count/confirmed | Get confirmed utxo count for specific nft(ignore all unconfirmed txs).
+*SensibleApi* | [**sensibleNftAddressAddressSummaryGet**](docs/SensibleApi.md#sensibleNftAddressAddressSummaryGet) | **GET** /sensible/nft/address/{address}/summary | Get nft summary(NFT count group by genesis) for address.
 *SensibleApi* | [**sensibleNftAddressAddressUtxoGet**](docs/SensibleApi.md#sensibleNftAddressAddressUtxoGet) | **GET** /sensible/nft/address/{address}/utxo | Get all sensible nft token utxos for specific address.
 *SensibleApi* | [**sensibleNftAuctionCodeHashCodeHashNftIdNftIdUtxoGet**](docs/SensibleApi.md#sensibleNftAuctionCodeHashCodeHashNftIdNftIdUtxoGet) | **GET** /sensible/nft/auction/codeHash/{codeHash}/nftId/{nftId}/utxo | Get all sensible nft token utxos by codeHash and genesisId.
+*SensibleApi* | [**sensibleNftGenesisCodeHashGenesisSummaryGet**](docs/SensibleApi.md#sensibleNftGenesisCodeHashGenesisSummaryGet) | **GET** /sensible/nft/genesis/{codeHash}/{genesis}/summary | Get nft summary(count group by address) for specific codeHash and genesisId(result cached for 60s).
 *SensibleApi* | [**sensibleNftGenesisCodeHashGenesisUtxoGet**](docs/SensibleApi.md#sensibleNftGenesisCodeHashGenesisUtxoGet) | **GET** /sensible/nft/genesis/{codeHash}/{genesis}/utxo | Get all sensible nft token utxos by codeHash and genesisId.
 *SensibleApi* | [**sensibleNftSellAddressAddressUtxoGet**](docs/SensibleApi.md#sensibleNftSellAddressAddressUtxoGet) | **GET** /sensible/nft/sell/address/{address}/utxo | Get all sensible sell sell utxos for specific address.
 *SensibleApi* | [**sensibleNftSellGenesisCodeHashGenesisUtxoGet**](docs/SensibleApi.md#sensibleNftSellGenesisCodeHashGenesisUtxoGet) | **GET** /sensible/nft/sell/genesis/{codeHash}/{genesis}/utxo | Get all sensible nft token utxos by codeHash and genesisId.
+*SensibleApi* | [**sensibleNftSellV2AddressAddressUtxoGet**](docs/SensibleApi.md#sensibleNftSellV2AddressAddressUtxoGet) | **GET** /sensible/nft/sellV2/address/{address}/utxo | Get all sensible sell sell utxos for specific address.
+*SensibleApi* | [**sensibleNftSellV2GenesisCodeHashGenesisUtxoGet**](docs/SensibleApi.md#sensibleNftSellV2GenesisCodeHashGenesisUtxoGet) | **GET** /sensible/nft/sellV2/genesis/{codeHash}/{genesis}/utxo | Get all sensible nft token utxos by codeHash and genesisId.
+*TxApi* | [**txBroadcastAsyncPost**](docs/TxApi.md#txBroadcastAsyncPost) | **POST** /tx/broadcast/async | Broadcast tx to metasv asyn(tx size no bigger than 250K).
+*TxApi* | [**txBroadcastAsyncTxidStateGet**](docs/TxApi.md#txBroadcastAsyncTxidStateGet) | **GET** /tx/broadcast/async/{txid}/state | Query aync broadcast result.
 *TxApi* | [**txBroadcastPost**](docs/TxApi.md#txBroadcastPost) | **POST** /tx/broadcast | Broadcast tx to metasv fullnode.
 *TxApi* | [**txTxidGet**](docs/TxApi.md#txTxidGet) | **GET** /tx/{txid} | Get transaction detail by specific txid.
 *TxApi* | [**txTxidRawGet**](docs/TxApi.md#txTxidRawGet) | **GET** /tx/{txid}/raw | Get transaction raw hex by specific txid.
@@ -158,6 +166,7 @@ Class | Method | HTTP request | Description
  - [AddressBalance](docs/AddressBalance.md)
  - [AddressTx](docs/AddressTx.md)
  - [AddressUtxo](docs/AddressUtxo.md)
+ - [AsyncBroadcastResult](docs/AsyncBroadcastResult.md)
  - [BlockHeader](docs/BlockHeader.md)
  - [BlockTx](docs/BlockTx.md)
  - [BlockchainInfo](docs/BlockchainInfo.md)
@@ -168,8 +177,11 @@ Class | Method | HTTP request | Description
  - [OutputInfoDetail](docs/OutputInfoDetail.md)
  - [SensibleFtBalance](docs/SensibleFtBalance.md)
  - [SensibleFtUtxo](docs/SensibleFtUtxo.md)
+ - [SensibleNftAddressSummary](docs/SensibleNftAddressSummary.md)
  - [SensibleNftAuctionUtxo](docs/SensibleNftAuctionUtxo.md)
+ - [SensibleNftGenesisSummary](docs/SensibleNftGenesisSummary.md)
  - [SensibleNftSellUtxo](docs/SensibleNftSellUtxo.md)
+ - [SensibleNftSellV2Utxo](docs/SensibleNftSellV2Utxo.md)
  - [SensibleNftUtxo](docs/SensibleNftUtxo.md)
  - [TxDetail](docs/TxDetail.md)
  - [TxInput](docs/TxInput.md)
